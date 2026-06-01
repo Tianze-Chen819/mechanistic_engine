@@ -1,0 +1,124 @@
+column,description,dtype,non_null,missing,example
+nct_id,ClinicalTrials.gov trial identifier,object,1038,0,NCT05593094
+title,,object,1038,0,A Phase 1 Trial of ZN-A-1041 Enteric Capsules or Combination in Participants With Human Epidermal Growth Factor Receptor 2 (HER2)-Positive Advanced Solid Tumors
+status,ClinicalTrials.gov trial status,object,1038,0,ACTIVE_NOT_RECRUITING
+phase,,object,1038,0,"['PHASE1', 'PHASE2']"
+study_type,,object,1038,0,INTERVENTIONAL
+sponsor,Lead sponsor organization,object,1038,0,Hoffmann-La Roche
+condition,,object,1038,0,"['Advanced Solid Tumors', 'HER2-positive Breast Cancer']"
+intervention_names,,object,1038,0,"['ZN-A-1041', 'ZN-A-1041 + T-DM1 3.6 mg/kg iv. for Phase 1b', 'ZN-A-1041 + T-Dxd 5.4 mg/kg iv. for Phase 1b', 'ZN-A-1041 + PHESGO / Herceptin plus Perjeta injection for Phase 1b', 'ZN-A-1041 + T-DM1 3.6 mg/kg iv. for Phase 1c', 'ZN-A-1041 + T-Dxd 5.4 mg/kg iv. for Phase 1c', 'ZN-A-1041 + PHESGO / Herceptin plus Perjeta injection for Phase 1c']"
+intervention_raw,,object,1038,0,"[{'type': 'DRUG', 'name': 'ZN-A-1041', 'description': 'ZN-A-1041: escalating doses orally BID at pre-defined dosing regimens to determine the MTD', 'armGroupLabels': ['1a: ZN-A-1041'], 'otherNames': ['ZN-A-1041 Enteric Capsules']}, {'type': 'DRUG', 'name': 'ZN-A-1041 + T-DM1 3.6 mg/kg iv. for Phase 1b', 'description': 'ZN-A-1041: BID via oral administration T-DM1: 3.6 mg/kg given as an intravenous infusion on the first day of each treatment cycle, once every 3 weeks (21-day cycle)', 'armGroupLabels': ['1b: ZN-A-1041 + T-DM1 3.6 mg/kg iv.'], 'otherNames': ['ZN-A-1041 Enteric Capsules']}, {'type': 'DRUG', 'name': 'ZN-A-1041 + T-Dxd 5.4 mg/kg iv. for Phase 1b', 'description': 'ZN-A-1041: BID via oral administration T-DXd: 5.4 mg/kg given as an intravenous infusion on the first day of each treatment cycle, once every 3 weeks (21-day cycle)', 'armGroupLabels': ['1b: ZN-A-1041 + T-Dxd 5.4 mg/kg iv.'], 'otherNames': ['ZN-A-1041 Enteric Capsules']}, {'type': 'DRUG', 'name': 'ZN-A-1041 + PHESGO / Herceptin plus Perjeta injection for Phase 1b', 'description': 'ZN-A-1041: BID via oral administration PHESGO dose is 600 mg pertuzumab/600 mg trastuzumab/2000 unites hyaluronidase every 3 weeks for subcutaneous administrations (21-day cycle) Perjeta is 420 mg administered as an intravenous infusion Herceptin is 6 mg/kg administered as an intravenous infusion', 'armGroupLabels': ['1b: ZN-A-1041 + PHESGO / Herceptin plus Perjeta'], 'otherNames': ['ZN-A-1041 Enteric Capsules']}, {'type': 'DRUG', 'name': 'ZN-A-1041 + T-DM1 3.6 mg/kg iv. for Phase 1c', 'description': 'ZN-A-1041: BID via oral administration T-DM1: intravenous infusion on the first day of each treatment cycle, once every 3 weeks (21-day cycle)', 'armGroupLabels': ['1c: ZN-A-1041 + T-DM1 3.6 mg/kg iv.'], 'otherNames': ['ZN-A-1041 Enteric Capsules']}, {'type': 'DRUG', 'name': 'ZN-A-1041 + T-Dxd 5.4 mg/kg iv. for Phase 1c', 'description': 'ZN-A-1041: BID via oral administration T-DXd: intravenous infusion on the first day of each treatment cycle, once every 3 weeks (21-day cycle)', 'armGroupLabels': ['1c: ZN-A-1041 + T-Dxd 5.4 mg/kg iv.'], 'otherNames': ['ZN-A-1041 Enteric Capsules']}, {'type': 'DRUG', 'name': 'ZN-A-1041 + PHESGO / Herceptin plus Perjeta injection for Phase 1c', 'description': 'ZN-A-1041: BID via oral administration PHESGO: every 3 weeks for subcutaneous administrations (21-day cycle) Perjeta: intravenous infusion Herceptin: intravenous infusion', 'armGroupLabels': ['1c: ZN-A-1041 + Herceptin plus Perjeta/PHESGO'], 'otherNames': ['ZN-A-1041 Enteric Capsules']}]"
+eligibility_text,,object,1038,0,"Inclusion Criteria:
+
+* Eastern Cooperative Oncology Group (ECOG) performance status of 0 or 1
+* Life expectancy of at least 6 months, as determined by the investigator
+* Histologically or cytologically confirmed with unresectable or metastatic HER2-positive advanced solid tumors
+* Must be relapsed or refractory after prior treatment for metastatic disease that included a taxane and trastuzumab or must have received first-line induction therapy for advanced disease a pertuzumab plus trastuzumab-based regimen or a T-DXd-based regimen
+* Participants with new, untreated, progressive, or stable brain metastases are eligible
+
+Exclusion Criteria:
+
+* Participation in any other clinical study involving an investigational drug or device within 4 weeks prior to the first dose of study treatment
+* Any intracranial lesion (brain metastasis) that requires immediate local therapy, such as surgery or radiation, or systemic corticosteroids at the time of enrollment"
+start_date,,object,1038,0,2020-09-03
+completion_date,,object,1038,0,2027-07-31
+primary_outcomes,,object,1038,0,"[{'measure': 'The Incidence of Treatment-emergent Adverse Events of ZN-A-1041 as a Monotherapy in Phase 1a', 'description': 'Dose at which no more than one out of six participant at the same dose level experiences a probable drug-related DLT.', 'timeFrame': '23 days'}, {'measure': 'The Incidence of Treatment-emergent Adverse Events of ZN-A-1041 in Combination with T-DM1 or with T-DXd, or in Combination with PHESGO or Herceptin plus Perjeta', 'description': 'Dose at which no more than one out of six participant at the same dose level experiences a probable drug-related DLT.', 'timeFrame': '21 days'}, {'measure': 'RP2D', 'description': 'To evaluate the safety of ZN-A-1041 in combination with T-DM1 or with T-DXd, or in combination with PHESGO or Herceptin plus Perjeta in participants on the RP2D.', 'timeFrame': 'Through study completion, an average of 1 year'}]"
+has_results,,bool,1038,0,False
+is_phase2,,bool,1038,0,True
+has_drug,,bool,1038,0,True
+start_year,Year trial started,float64,1030,8,2020.0
+canonical_drug,Normalized drug name from curated dictionary,object,1038,0,t-dxd
+target_genes,,object,1038,0,['ERBB2']
+primary_target,Primary gene target (HGNC symbol),object,1038,0,ERBB2
+modality,"Drug modality: small_molecule, antibody, adc, etc.",object,1038,0,adc
+moa,Mechanism of action category,object,1038,0,her2_adc
+drug_confidence,Confidence in drug normalization (0-1),float64,1038,0,0.85
+disease,Normalized cancer type,object,1038,0,HER2+ breast cancer
+disease_confidence,Confidence in disease normalization (0-1),float64,1038,0,0.95
+biomarker,Biomarker extracted from trial text (if any),object,339,699,HER2 amplification
+label_strict,Strict label: 1=clearly positive results only,int64,1038,0,0
+label_balanced,Balanced label: 1=positive results or strong biology completion (~33%),int64,1038,0,1
+label_permissive,Permissive label: 1=any completion or continuation signal (~74%),int64,1038,0,1
+label_provenance,How this label was assigned (human-readable reason),object,1038,0,active+positive_text
+label_confidence,Confidence in label assignment (0-1),float64,1038,0,0.5
+label_determinate,,int64,1038,0,1
+target_disease_assoc,Open Targets overall association score (real or curated),float64,1038,0,0.8223814259934649
+genetics_evidence,Genetic association evidence score,float64,1038,0,0.01
+somatic_evidence,Somatic mutation evidence score,float64,1038,0,0.8314060765533569
+pathway_evidence,Pathway-level evidence score,float64,1038,0,0.8678361603226922
+known_drug_evidence,Known drug evidence score,float64,1038,0,0.1
+literature_diversity,Publication diversity (log-scaled count),float64,1038,0,0.8395342553648094
+dependency_mean,Mean DepMap dependency score in relevant lineage,float64,1038,0,0.69872
+dependency_selectivity,Biomarker+ vs biomarker- selectivity,float64,1038,0,0.43021999999999994
+dependency_variance,Dependency variance across cell lines,float64,1038,0,0.11027199999999998
+context_specificity,Context specificity index,float64,1038,0,0.58638
+degree_centrality,STRING network degree centrality (normalized),float64,1038,0,1.0
+network_confidence,Network interaction confidence,float64,1038,0,0.9271
+clustering_coefficient,Network clustering coefficient,float64,1038,0,0.31192000000000003
+pathway_redundancy,Pathway redundancy proxy,float64,1038,0,0.95
+bottleneck_score,Network bottleneck/chokepoint proxy,float64,1038,0,0.05
+alternative_pathway_burden,Alternative pathway burden,float64,1038,0,0.95
+reactome_pathway_count,,float64,1038,0,0.0
+omnipath_interaction_count,,float64,1038,0,0.0
+alteration_frequency,Biomarker alteration frequency in disease,float64,339,699,0.200656
+biomarker_directness,Biomarker-target directness score,float64,339,699,0.35
+co_alteration_burden,Co-alteration burden,float64,339,699,0.23559999999999998
+genomic_complexity,Genomic context complexity,float64,339,699,0.30146399999999995
+assay_precision,Biomarker assay precision proxy,float64,339,699,0.59382
+biomarker_prevalence,Biomarker prevalence in disease,float64,339,699,0.12260000000000001
+biomarker_clonality,Biomarker clonality proxy,float64,339,699,0.569104
+biomarker_missing,"1 if no biomarker identified, 0 otherwise",int64,1038,0,0
+modality_target_fit,Modality-target fit score,float64,1038,0,0.76798
+binding_evidence,Known target-binding evidence,float64,1038,0,0.8836400000000001
+potency_proxy,Drug potency proxy,float64,1038,0,0.5471680000000001
+functional_annotation_depth,UniProt functional annotation depth,float64,1038,0,0.4
+domain_criticality,Target domain criticality,float64,1038,0,0.7
+perturbation_concordance,Perturbation concordance score,float64,1038,0,0.42944800000000005
+mechanistic_maturity,Overall mechanistic maturity,float64,1038,0,0.70426
+tumor_expression,Tumor-relevant expression proxy,float64,1038,0,0.5964700000000001
+normal_tissue_burden,Normal tissue expression burden,float64,1038,0,0.307608
+expression_variability,Expression variability across tissues,float64,1038,0,0.31894
+tumor_specificity,Tumor specificity proxy,float64,1038,0,0.588862
+therapeutic_window,Therapeutic window proxy,float64,1038,0,0.49318
+pub_velocity_1y,Publication velocity (1-year),float64,1038,0,1.0
+pub_acceleration,Publication acceleration,float64,1038,0,0.6150798668183926
+pub_concentration,Publication concentration index,float64,1038,0,1.0
+mechanistic_study_fraction,Fraction of mechanistic studies,float64,1038,0,0.3883761116028154
+translational_study_fraction,Fraction of translational studies,float64,1038,0,0.6150798668183926
+human_study_fraction,Fraction of human/clinical studies,float64,1038,0,0.6375858726345514
+gwas_association_count,,float64,1038,0,0.2
+has_known_ligands,"1 if known ligands exist, 0 otherwise",int64,1038,0,1
+tractability,Target tractability proxy,float64,1038,0,0.99
+polypharmacology_proxy,Polypharmacology risk proxy,float64,1038,0,0.95
+cosmic_census_member,,int64,1038,0,1
+drugbank_interaction_count,,float64,1038,0,0.0
+disgenet_cancer_count,,float64,1038,0,0.0
+has_real_ot_data,"1 if real Open Targets API data used, 0 if curated fallback",int64,1038,0,1
+has_real_pubmed_data,"1 if real PubMed API data used, 0 if curated fallback",int64,1038,0,1
+has_real_string_data,,int64,1038,0,1
+has_real_cbio_data,,int64,1038,0,1
+has_real_chembl_data,,int64,1038,0,1
+has_real_uniprot_data,,int64,1038,0,1
+has_real_hpa_data,,int64,1038,0,0
+GCS,Genetic Causality Score,float64,1038,0,0.553849562968648
+DS,Dependency Score,float64,1038,0,0.69872
+SS,Selectivity Score,float64,1038,0,0.43021999999999994
+CSI,Context Specificity Index,float64,1038,0,0.58638
+NCS,Network Centrality Score,float64,1038,0,0.6441589999999999
+PRS,Pathway Redundancy Score,float64,1038,0,0.95
+BS,Bottleneck Score,float64,1038,0,0.05
+FAS,Functional Annotation Score,float64,1038,0,0.6253436000000001
+TSS_exp,Tumor Specificity Score (expression),float64,1038,0,0.588862
+SWP,Safety Window Proxy,float64,1038,0,0.307608
+PCS,Perturbation Concordance Score,float64,1038,0,0.42944800000000005
+AFS,Alteration Frequency Score,float64,339,699,0.200656
+CABS,Co-alteration Burden Score,float64,339,699,0.23559999999999998
+MMS,Mechanistic Maturity Score,float64,1038,0,0.70426
+PMS,Publication Momentum Score,float64,1038,0,0.7112723901041008
+CDS,Causal Dependency Score (higher-order),float64,1038,0,0.5477044688905944
+TDS,Target Dominance Score (higher-order),float64,1038,0,0.33269600000000005
+BFS,Biomarker Fidelity Score (higher-order),float64,1038,0,0.452172
+MCS,Mechanistic Coherence Score (higher-order),float64,1038,0,0.6522929
+TWS,Therapeutic Window Score (higher-order),float64,1038,0,0.6475804000000001
+EMS,Evidence Momentum Score (higher-order),float64,1038,0,0.6986549733636787
+BIOLOGY_SCORE,Overall biology score (weighted combination of CDS/TDS/BFS/MCS/TWS/EMS),float64,1038,0,0.5596649797826707

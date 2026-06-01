@@ -5,7 +5,11 @@ __pycache__/
 .venv/
 .vscode/
 
-mechanistic_engine_output/
+mechanistic_engine_output/.DS_Store
+mechanistic_engine_output/cache/
+mechanistic_engine_output/models/
+mechanistic_engine_output/*.log
+mechanistic_engine_output/data/raw_trials.json
 
 *.log
 .ipynb_checkpoints/

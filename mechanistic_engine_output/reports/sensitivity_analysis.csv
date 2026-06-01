@@ -1,0 +1,10 @@
+test,label,model,features,roc_auc,pr_auc,f1,brier,balanced_accuracy,n
+label_sensitivity,label_strict,LightGBM,composite,0.520789,0.189299,0.270833,0.282122,0.517085,
+label_sensitivity,label_balanced,LightGBM,composite,0.520789,0.189299,0.270833,0.282122,0.517085,
+label_sensitivity,label_permissive,LightGBM,composite,0.626874,0.49197,0.54955,0.290561,0.579359,
+feature_sensitivity,label_balanced,LightGBM,raw,0.51589,0.1905,0.25,0.27794,0.497252,
+feature_sensitivity,label_balanced,LightGBM,composite,0.520789,0.189299,0.270833,0.282122,0.517085,
+feature_sensitivity,label_balanced,LightGBM,hybrid,0.520789,0.189299,0.270833,0.282122,0.517085,
+subset_mapped_drugs_only,label_balanced,LightGBM,composite,0.508577,0.176387,0.243902,0.259776,0.505343,155.0
+subset_biomarker_enriched,label_balanced,LightGBM,composite,0.486126,0.175123,0.241758,0.291494,0.490436,157.0
+subset_has_real_ot_data,label_balanced,LightGBM,composite,0.47381,0.181487,0.285714,0.333143,0.511905,52.0

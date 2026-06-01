@@ -1,0 +1,218 @@
+nct_id,canonical_drug,disease,primary_target,modality,predicted_p
+NCT04864067,capecitabine,colorectal cancer,TYMS,small_molecule,0.849
+NCT06333769,capecitabine,colorectal cancer,TYMS,small_molecule,0.849
+NCT02978612,capecitabine,colorectal cancer,TYMS,small_molecule,0.849
+NCT05687617,unmapped,gastric cancer,UNKNOWN,unknown,0.775
+NCT02978222,unmapped,ovarian cancer,UNKNOWN,unknown,0.775
+NCT02775695,unmapped,pancreatic cancer,UNKNOWN,unknown,0.775
+NCT05653427,unmapped,hepatocellular carcinoma,UNKNOWN,unknown,0.775
+NCT04347226,unmapped,solid tumors,UNKNOWN,unknown,0.775
+NCT03760666,unmapped,leukemia,UNKNOWN,unknown,0.775
+NCT04495894,unmapped,nsclc,UNKNOWN,unknown,0.775
+NCT06022692,unmapped,cancer nos,UNKNOWN,unknown,0.775
+NCT03733990,unmapped,cancer nos,UNKNOWN,unknown,0.775
+NCT03126019,unmapped,lymphoma,UNKNOWN,unknown,0.775
+NCT02661542,unmapped,solid tumors,UNKNOWN,unknown,0.773
+NCT04276493,capecitabine,gastric cancer,TYMS,small_molecule,0.748
+NCT04963088,capecitabine,gastric cancer,TYMS,small_molecule,0.748
+NCT02631590,gemcitabine,bladder cancer,RRM1,small_molecule,0.711
+NCT04553939,gemcitabine,bladder cancer,RRM1,small_molecule,0.711
+NCT02564146,gemcitabine,pancreatic cancer,RRM1,small_molecule,0.707
+NCT02703779,bortezomib,multiple myeloma,PSMB5,small_molecule,0.704
+NCT02891811,carfilzomib,multiple myeloma,PSMB5,small_molecule,0.704
+NCT03927105,nivolumab,lymphoma,PDCD1,antibody,0.673
+NCT03255018,pembrolizumab,lymphoma,PDCD1,antibody,0.673
+NCT04045613,atezolizumab,bladder cancer,CD274,antibody,0.673
+NCT03580408,nivolumab,lymphoma,PDCD1,antibody,0.673
+NCT03035331,pembrolizumab,lymphoma,PDCD1,antibody,0.673
+NCT03892642,avelumab,bladder cancer,CD274,antibody,0.673
+NCT03891238,avelumab,bladder cancer,CD274,antibody,0.673
+NCT03625388,dasatinib,leukemia,ABL1,small_molecule,0.672
+NCT03801304,atezolizumab,nsclc,CD274,antibody,0.666
+NCT03164772,durvalumab,nsclc,CD274,antibody,0.666
+NCT02927301,atezolizumab,nsclc,CD274,antibody,0.666
+NCT03822351,durvalumab,nsclc,CD274,antibody,0.666
+NCT03977467,atezolizumab,nsclc,CD274,antibody,0.666
+NCT04944173,durvalumab,nsclc,CD274,antibody,0.666
+NCT03023046,imatinib,leukemia,ABL1,small_molecule,0.661
+NCT03267316,gemcitabine,nsclc,RRM1,small_molecule,0.657
+NCT03093831,ibrutinib,lymphoma,BTK,small_molecule,0.639
+NCT03571308,acalabrutinib,lymphoma,BTK,small_molecule,0.639
+NCT03399513,ibrutinib,lymphoma,BTK,small_molecule,0.639
+NCT02636322,ibrutinib,lymphoma,BTK,small_molecule,0.639
+NCT02532257,ibrutinib,lymphoma,BTK,small_molecule,0.639
+NCT04716075,acalabrutinib,leukemia,BTK,small_molecule,0.624
+NCT03088878,ibrutinib,leukemia,BTK,small_molecule,0.624
+NCT02801578,ibrutinib,leukemia,BTK,small_molecule,0.624
+NCT03873493,ibrutinib,leukemia,BTK,small_molecule,0.624
+NCT05267054,rituximab,lymphoma,MS4A1,antibody,0.619
+NCT02624492,rituximab,lymphoma,MS4A1,antibody,0.619
+NCT03892421,rituximab,lymphoma,MS4A1,antibody,0.619
+NCT03341520,obinutuzumab,lymphoma,MS4A1,antibody,0.619
+NCT04700072,pembrolizumab,melanoma,PDCD1,antibody,0.6
+NCT04133948,nivolumab,melanoma,PDCD1,antibody,0.6
+NCT02970981,nivolumab,melanoma,PDCD1,antibody,0.6
+NCT02631447,nivolumab,melanoma,PDCD1,antibody,0.6
+NCT04382664,nivolumab,melanoma,PDCD1,antibody,0.6
+NCT04009876,oxaliplatin,colorectal cancer,DNA,small_molecule,0.598
+NCT03493061,oxaliplatin,colorectal cancer,DNA,small_molecule,0.598
+NCT04967417,pembrolizumab,nsclc,PDCD1,antibody,0.593
+NCT04332653,pembrolizumab,nsclc,PDCD1,antibody,0.593
+NCT03197467,pembrolizumab,nsclc,PDCD1,antibody,0.593
+NCT02879760,pembrolizumab,nsclc,PDCD1,antibody,0.593
+NCT03090737,nivolumab,nsclc,PDCD1,antibody,0.593
+NCT02523469,nivolumab,nsclc,PDCD1,antibody,0.593
+NCT02661282,temozolomide,glioblastoma,DNA,small_molecule,0.592
+NCT03677141,doxorubicin,lymphoma,TOP2A,small_molecule,0.591
+NCT03318900,cyclophosphamide,ovarian cancer,DNA,small_molecule,0.588
+NCT03534180,venetoclax,lymphoma,BCL2,small_molecule,0.574
+NCT03113422,venetoclax,lymphoma,BCL2,small_molecule,0.574
+NCT02654132,pomalidomide,multiple myeloma,CRBN,small_molecule,0.566
+NCT03439280,pomalidomide,multiple myeloma,CRBN,small_molecule,0.566
+NCT02958852,letrozole,breast cancer,CYP19A1,small_molecule,0.556
+NCT05085002,letrozole,breast cancer,CYP19A1,small_molecule,0.556
+NCT04266795,venetoclax,leukemia,BCL2,small_molecule,0.555
+NCT03740529,venetoclax,leukemia,BCL2,small_molecule,0.555
+NCT04146038,venetoclax,leukemia,BCL2,small_molecule,0.555
+NCT02772588,abiraterone,prostate cancer,CYP17A1,small_molecule,0.546
+NCT02849990,abiraterone,prostate cancer,CYP17A1,small_molecule,0.546
+NCT04164368,lenalidomide,lymphoma,CRBN,small_molecule,0.517
+NCT02399085,lenalidomide,lymphoma,CRBN,small_molecule,0.517
+NCT03248427,ribociclib,breast cancer,CDK4,small_molecule,0.509
+NCT02536742,palbociclib,breast cancer,CDK4,small_molecule,0.509
+NCT03839823,ribociclib,breast cancer,CDK4,small_molecule,0.509
+NCT03671330,ribociclib,breast cancer,CDK4,small_molecule,0.509
+NCT05163106,ribociclib,breast cancer,CDK4,small_molecule,0.509
+NCT02183883,afatinib,nsclc,EGFR,small_molecule,0.499
+NCT04541355,cisplatin,hnscc,DNA,small_molecule,0.499
+NCT03543683,osimertinib,nsclc,EGFR,small_molecule,0.499
+NCT03133546,osimertinib,nsclc,EGFR,small_molecule,0.499
+NCT02611037,gemcitabine,cancer nos,RRM1,small_molecule,0.498
+NCT03449901,gemcitabine,cancer nos,RRM1,small_molecule,0.498
+NCT02511132,gemcitabine,cancer nos,RRM1,small_molecule,0.498
+NCT02659020,gemcitabine,cancer nos,RRM1,small_molecule,0.498
+NCT02891447,cisplatin,gastric cancer,DNA,small_molecule,0.492
+NCT03878472,oxaliplatin,gastric cancer,DNA,small_molecule,0.492
+NCT04694183,oxaliplatin,gastric cancer,DNA,small_molecule,0.492
+NCT05593328,bevacizumab,colorectal cancer,VEGFA,antibody,0.479
+NCT03929666,bevacizumab,colorectal cancer,VEGFA,antibody,0.479
+NCT04933695,sotorasib,nsclc,KRAS,small_molecule,0.475
+NCT02795988,capecitabine,cancer nos,TYMS,small_molecule,0.455
+NCT06009627,docetaxel,breast cancer,TUBB,small_molecule,0.45
+NCT02722668,cyclophosphamide,multiple myeloma,DNA,small_molecule,0.447
+NCT04710641,sorafenib,hepatocellular carcinoma,BRAF,small_molecule,0.446
+NCT04518852,sorafenib,hepatocellular carcinoma,BRAF,small_molecule,0.446
+NCT02793544,cyclophosphamide,leukemia,DNA,small_molecule,0.44
+NCT02625480,cyclophosphamide,leukemia,DNA,small_molecule,0.44
+NCT04288687,niraparib,prostate cancer,PARP1,small_molecule,0.437
+NCT03128359,cyclophosphamide,lymphoma,DNA,small_molecule,0.436
+NCT04880434,cyclophosphamide,lymphoma,DNA,small_molecule,0.436
+NCT04323657,cyclophosphamide,lymphoma,DNA,small_molecule,0.436
+NCT03989336,paclitaxel,ovarian cancer,TUBB,small_molecule,0.429
+NCT02259725,regorafenib,pancreatic cancer,VEGFR2,small_molecule,0.42
+NCT03464734,pembrolizumab,bladder cancer,PDCD1,antibody,0.416
+NCT02625961,pembrolizumab,bladder cancer,PDCD1,antibody,0.416
+NCT03674112,trastuzumab,breast cancer,ERBB2,antibody,0.415
+NCT02843126,trastuzumab,breast cancer,ERBB2,antibody,0.414
+NCT02729896,atezolizumab,lymphoma,CD274,antibody,0.414
+NCT03003520,durvalumab,lymphoma,CD274,antibody,0.414
+NCT02530489,atezolizumab,breast cancer,CD274,antibody,0.411
+NCT02924883,atezolizumab,breast cancer,CD274,antibody,0.411
+NCT02915783,lenvatinib,renal cell carcinoma,VEGFR2,small_molecule,0.409
+NCT04118855,axitinib,renal cell carcinoma,VEGFR2,small_molecule,0.409
+NCT03730012,atezolizumab,leukemia,CD274,antibody,0.408
+NCT04534218,regorafenib,colorectal cancer,VEGFR2,small_molecule,0.407
+NCT03828799,regorafenib,colorectal cancer,VEGFR2,small_molecule,0.407
+NCT02716974,docetaxel,prostate cancer,TUBB,small_molecule,0.406
+NCT05109442,atezolizumab,solid tumors,CD274,antibody,0.406
+NCT02640508,lenvatinib,solid tumors,VEGFR2,small_molecule,0.401
+NCT05908786,atezolizumab,hepatocellular carcinoma,CD274,antibody,0.4
+NCT03698227,doxorubicin,cancer nos,TOP2A,small_molecule,0.4
+NCT03336983,enzalutamide,prostate cancer,AR,small_molecule,0.397
+NCT06312670,enzalutamide,prostate cancer,AR,small_molecule,0.397
+NCT05526248,enzalutamide,prostate cancer,AR,small_molecule,0.397
+NCT04869488,enzalutamide,prostate cancer,AR,small_molecule,0.397
+NCT03418324,enzalutamide,prostate cancer,AR,small_molecule,0.397
+NCT02648477,pembrolizumab,breast cancer,PDCD1,antibody,0.396
+NCT03139851,pembrolizumab,breast cancer,PDCD1,antibody,0.396
+NCT03194373,palbociclib,hnscc,CDK4,small_molecule,0.392
+NCT03045653,tamoxifen,breast cancer,ESR1,small_molecule,0.391
+NCT02756364,fulvestrant,breast cancer,ESR1,small_molecule,0.391
+NCT03894891,nivolumab,hnscc,PDCD1,antibody,0.385
+NCT04555837,pembrolizumab,hnscc,PDCD1,antibody,0.385
+NCT02689284,pembrolizumab,gastric cancer,PDCD1,antibody,0.385
+NCT02707588,pembrolizumab,hnscc,PDCD1,antibody,0.385
+NCT02718820,pembrolizumab,hnscc,PDCD1,antibody,0.385
+NCT04056910,nivolumab,solid tumors,PDCD1,antibody,0.385
+NCT03570619,nivolumab,solid tumors,PDCD1,antibody,0.385
+NCT02684253,nivolumab,hnscc,PDCD1,antibody,0.385
+NCT07529613,nivolumab,gastric cancer,PDCD1,antibody,0.385
+NCT02999295,nivolumab,gastric cancer,PDCD1,antibody,0.385
+NCT03321630,pembrolizumab,gastric cancer,PDCD1,antibody,0.385
+NCT03274258,nivolumab,renal cell carcinoma,PDCD1,antibody,0.385
+NCT04220866,pembrolizumab,hnscc,PDCD1,antibody,0.385
+NCT03108495,pembrolizumab,cervical cancer,PDCD1,antibody,0.385
+NCT04761198,nivolumab,solid tumors,PDCD1,antibody,0.385
+NCT03409848,nivolumab,gastric cancer,PDCD1,antibody,0.385
+NCT02768792,pembrolizumab,leukemia,PDCD1,antibody,0.384
+NCT02520154,pembrolizumab,ovarian cancer,PDCD1,antibody,0.384
+NCT02878785,talazoparib,leukemia,PARP1,small_molecule,0.383
+NCT03184870,nivolumab,colorectal cancer,PDCD1,antibody,0.381
+NCT04166383,nivolumab,colorectal cancer,PDCD1,antibody,0.381
+NCT03043664,pembrolizumab,pancreatic cancer,PDCD1,antibody,0.377
+NCT03510871,nivolumab,hepatocellular carcinoma,PDCD1,antibody,0.377
+NCT04828486,pembrolizumab,hepatocellular carcinoma,PDCD1,antibody,0.377
+NCT04310709,nivolumab,hepatocellular carcinoma,PDCD1,antibody,0.377
+NCT02826486,pembrolizumab,pancreatic cancer,PDCD1,antibody,0.377
+NCT03727880,pembrolizumab,pancreatic cancer,PDCD1,antibody,0.377
+NCT03617679,rucaparib,endometrial cancer,PARP1,small_molecule,0.375
+NCT03101254,vemurafenib,melanoma,BRAF,small_molecule,0.375
+NCT02661971,ramucirumab,gastric cancer,KDR,antibody,0.373
+NCT04313504,niraparib,hnscc,PARP1,small_molecule,0.373
+NCT03554473,topotecan,cancer nos,TOP1,small_molecule,0.366
+NCT03098030,irinotecan,cancer nos,TOP1,small_molecule,0.366
+NCT02985957,nivolumab,prostate cancer,PDCD1,antibody,0.357
+NCT03093428,pembrolizumab,prostate cancer,PDCD1,antibody,0.357
+NCT03241745,nivolumab,endometrial cancer,PDCD1,antibody,0.357
+NCT03248570,pembrolizumab,prostate cancer,PDCD1,antibody,0.357
+NCT03211117,pembrolizumab,thyroid cancer,PDCD1,antibody,0.353
+NCT04154189,lenvatinib,cancer nos,VEGFR2,small_molecule,0.35
+NCT04282018,zanubrutinib,solid tumors,BTK,small_molecule,0.342
+NCT04547153,docetaxel,gastric cancer,TUBB,small_molecule,0.338
+NCT03531840,olaparib,cancer nos,PARP1,small_molecule,0.328
+NCT04452877,dabrafenib,cancer nos,BRAF,small_molecule,0.322
+NCT03565835,abiraterone,cancer nos,CYP17A1,small_molecule,0.3
+NCT03043313,trastuzumab,colorectal cancer,ERBB2,antibody,0.289
+NCT03989115,osimertinib,solid tumors,EGFR,small_molecule,0.276
+NCT03395080,paclitaxel,endometrial cancer,TUBB,small_molecule,0.264
+NCT05553808,docetaxel,cancer nos,TUBB,small_molecule,0.264
+NCT03069937,docetaxel,cancer nos,TUBB,small_molecule,0.264
+NCT03006848,avelumab,cancer nos,CD274,antibody,0.258
+NCT03990571,avelumab,cancer nos,CD274,antibody,0.258
+NCT02904954,durvalumab,cancer nos,CD274,antibody,0.258
+NCT03041311,atezolizumab,cancer nos,CD274,antibody,0.258
+NCT02451423,atezolizumab,cancer nos,CD274,antibody,0.258
+NCT02815995,durvalumab,cancer nos,CD274,antibody,0.258
+NCT04308785,atezolizumab,cancer nos,CD274,antibody,0.258
+NCT02899195,durvalumab,cancer nos,CD274,antibody,0.258
+NCT03094286,durvalumab,cancer nos,CD274,antibody,0.258
+NCT04644237,trastuzumab,nsclc,ERBB2,antibody,0.248
+NCT03694002,ramucirumab,cancer nos,KDR,antibody,0.246
+NCT02795858,ramucirumab,cancer nos,KDR,antibody,0.246
+NCT03459222,nivolumab,cancer nos,PDCD1,antibody,0.233
+NCT03829722,nivolumab,cancer nos,PDCD1,antibody,0.233
+NCT03322267,pembrolizumab,cancer nos,PDCD1,antibody,0.233
+NCT03284424,pembrolizumab,cancer nos,PDCD1,antibody,0.233
+NCT04118166,nivolumab,cancer nos,PDCD1,antibody,0.233
+NCT03958045,nivolumab,cancer nos,PDCD1,antibody,0.233
+NCT02939651,pembrolizumab,cancer nos,PDCD1,antibody,0.233
+NCT03056001,pembrolizumab,cancer nos,PDCD1,antibody,0.233
+NCT02919969,pembrolizumab,cancer nos,PDCD1,antibody,0.233
+NCT03994601,nivolumab,cancer nos,PDCD1,antibody,0.23
+NCT03369223,nivolumab,cancer nos,PDCD1,antibody,0.23
+NCT03296137,nivolumab,cancer nos,PDCD1,antibody,0.23
+NCT02784171,pembrolizumab,cancer nos,PDCD1,antibody,0.23
+NCT02593175,panitumumab,breast cancer,EGFR,antibody,0.179
+NCT03416153,carboplatin,cancer nos,DNA,small_molecule,0.173
+NCT02784288,carboplatin,cancer nos,DNA,small_molecule,0.173
+NCT03365882,cetuximab,colorectal cancer,EGFR,antibody,0.151

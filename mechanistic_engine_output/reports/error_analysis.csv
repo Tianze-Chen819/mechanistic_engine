@@ -1,0 +1,135 @@
+nct_id,canonical_drug,primary_target,disease,modality,predicted_p,error_type
+NCT04038489,tamoxifen,ESR1,breast cancer,small_molecule,0.8406700666737424,false_positive
+NCT03501979,tucatinib,ERBB2,breast cancer,small_molecule,0.7974069536799636,false_positive
+NCT05500508,unmapped,UNKNOWN,NSCLC,unknown,0.7812948653565981,false_positive
+NCT04176952,adagrasib,KRAS,pancreatic cancer,small_molecule,0.7706387300600566,false_positive
+NCT05212922,unmapped,UNKNOWN,NSCLC,unknown,0.7617877157823876,false_positive
+NCT04896320,tucatinib,ERBB2,breast cancer,small_molecule,0.7612288672309184,false_positive
+NCT05917470,unmapped,UNKNOWN,prostate cancer,unknown,0.7265790899069892,false_positive
+NCT04111107,unmapped,UNKNOWN,lymphoma,unknown,0.7242441075052191,false_positive
+NCT03803761,fulvestrant,ESR1,breast cancer,small_molecule,0.7242323770961249,false_positive
+NCT04093323,unmapped,UNKNOWN,melanoma,unknown,0.7087680425049978,false_positive
+NCT05676463,unmapped,UNKNOWN,prostate cancer,unknown,0.7081118621427722,false_positive
+NCT04862143,alpelisib,PIK3CA,breast cancer,small_molecule,0.7052375237951573,false_positive
+NCT04510285,trastuzumab,ERBB2,gastric cancer,antibody,0.6932352737707318,false_positive
+NCT04159896,nivolumab,PDCD1,prostate cancer,antibody,0.6894414055458898,false_positive
+NCT04952753,bevacizumab,VEGFA,colorectal cancer,antibody,0.6863143598249585,false_positive
+NCT05171166,unmapped,UNKNOWN,hepatocellular carcinoma,unknown,0.6858848100247276,false_positive
+NCT04347226,unmapped,UNKNOWN,solid tumors,unknown,0.6839671365549006,false_positive
+NCT04230954,cabozantinib,MET,cancer NOS,small_molecule,0.6797987947225674,false_positive
+NCT05071183,trametinib,MAP2K1,solid tumors,small_molecule,0.6706674877466218,false_positive
+NCT05177796,carboplatin,DNA,TNBC,small_molecule,0.6675598370385138,false_positive
+NCT04217317,unmapped,UNKNOWN,lymphoma,unknown,0.6623721759277182,false_positive
+NCT05546411,fluorouracil,TYMS,pancreatic cancer,small_molecule,0.6565277144209551,false_positive
+NCT04491084,unmapped,UNKNOWN,NSCLC,unknown,0.6463484356711537,false_positive
+NCT04824794,unmapped,UNKNOWN,AML,unknown,0.6453869912914266,false_positive
+NCT05356897,trastuzumab,ERBB2,colorectal cancer,antibody,0.6445812096376101,false_positive
+NCT06054477,pembrolizumab,PDCD1,HNSCC,antibody,0.6416453057184244,false_positive
+NCT06501989,fluorouracil,TYMS,colorectal cancer,small_molecule,0.6414088700010642,false_positive
+NCT05011058,unmapped,UNKNOWN,DLBCL,unknown,0.636282035666101,false_positive
+NCT03644342,unmapped,UNKNOWN,cancer NOS,unknown,0.6319602786143398,false_positive
+NCT03925675,unmapped,UNKNOWN,cancer NOS,unknown,0.6293800745997911,false_positive
+NCT05653427,unmapped,UNKNOWN,hepatocellular carcinoma,unknown,0.6246379474234673,false_positive
+NCT04648189,cetuximab,EGFR,lung cancer NOS,antibody,0.623069214862653,false_positive
+NCT04282590,unmapped,UNKNOWN,cancer NOS,unknown,0.6189331449566079,false_positive
+NCT04444141,unmapped,UNKNOWN,lymphoma,unknown,0.6175537576434902,false_positive
+NCT03514017,pembrolizumab,PDCD1,CLL,antibody,0.6167076585488737,false_positive
+NCT04778410,venetoclax,BCL2,cancer NOS,small_molecule,0.6134274225867928,false_positive
+NCT04331119,unmapped,UNKNOWN,lymphoma,unknown,0.6058605485641686,false_positive
+NCT04426201,unmapped,UNKNOWN,cancer NOS,unknown,0.6052994105433608,false_positive
+NCT05967286,alpelisib,PIK3CA,breast cancer,small_molecule,0.6025695826691849,false_positive
+NCT04629651,unmapped,UNKNOWN,cancer NOS,unknown,0.6001540888055823,false_positive
+NCT05109442,atezolizumab,CD274,solid tumors,antibody,0.599732457060767,false_positive
+NCT06017297,durvalumab,CD274,cancer NOS,antibody,0.5987271964472639,false_positive
+NCT05589597,unmapped,UNKNOWN,colorectal cancer,unknown,0.5976476276608611,false_positive
+NCT04308785,atezolizumab,CD274,SCLC,antibody,0.5908444444541977,false_positive
+NCT06068881,unmapped,UNKNOWN,lymphoma,unknown,0.5904235413802611,false_positive
+NCT04212221,unmapped,UNKNOWN,hepatocellular carcinoma,unknown,0.5878158712071299,false_positive
+NCT05565794,unmapped,UNKNOWN,cholangiocarcinoma,unknown,0.5865737679761743,false_positive
+NCT06881823,unmapped,UNKNOWN,prostate cancer,unknown,0.5849439223770051,false_positive
+NCT06227897,unmapped,UNKNOWN,lung cancer NOS,unknown,0.5800703613217858,false_positive
+NCT04337931,unmapped,UNKNOWN,melanoma,unknown,0.5767117574544586,false_positive
+NCT06006286,atezolizumab,CD274,hepatocellular carcinoma,antibody,0.5704653227233659,false_positive
+NCT03795272,rucaparib,PARP1,cancer NOS,small_molecule,0.5637623556727879,false_positive
+NCT04536922,cyclophosphamide,DNA,cancer NOS,small_molecule,0.5619397867251965,false_positive
+NCT04611776,atezolizumab,CD274,NSCLC,antibody,0.5614855859832556,false_positive
+NCT04362007,unmapped,UNKNOWN,lymphoma,unknown,0.558946690355596,false_positive
+NCT04157088,enzalutamide,AR,cancer NOS,small_molecule,0.5588584076812374,false_positive
+NCT04029038,cyclophosphamide,DNA,CLL,small_molecule,0.5489071199338995,false_positive
+NCT07084909,unmapped,UNKNOWN,renal cell carcinoma,unknown,0.5472368720835408,false_positive
+NCT03668392,unmapped,UNKNOWN,cancer NOS,unknown,0.5451042554913007,false_positive
+NCT03868423,brigatinib,ALK,cancer NOS,small_molecule,0.5314596296898411,false_positive
+NCT04272645,abemaciclib,CDK4,prostate cancer,small_molecule,0.5294053238088247,false_positive
+NCT07511972,pembrolizumab,PDCD1,cancer NOS,antibody,0.5290168405716283,false_positive
+NCT04648826,unmapped,UNKNOWN,melanoma,unknown,0.5198000854610472,false_positive
+NCT05255484,unmapped,UNKNOWN,solid tumors,unknown,0.5188997471949467,false_positive
+NCT03712930,unmapped,UNKNOWN,prostate cancer,unknown,0.5188762477901295,false_positive
+NCT04425655,unmapped,UNKNOWN,AML,unknown,0.5177269333785539,false_positive
+NCT05743270,nivolumab,PDCD1,HNSCC,antibody,0.5132765460484779,false_positive
+NCT04013880,unmapped,UNKNOWN,AML,unknown,0.512388915986176,false_positive
+NCT00960544,capecitabine,TYMS,breast cancer,small_molecule,0.5116712034970665,false_positive
+NCT03533946,rucaparib,PARP1,prostate cancer,small_molecule,0.5079692049891908,false_positive
+NCT04407442,unmapped,UNKNOWN,multiple myeloma,unknown,0.5014554099535302,false_positive
+NCT03649464,unmapped,UNKNOWN,glioblastoma,unknown,0.5013445077708203,false_positive
+NCT04602065,unmapped,UNKNOWN,lymphoma,unknown,0.06564503114449678,false_negative
+NCT04109482,cyclophosphamide,DNA,cancer NOS,small_molecule,0.07209571602953456,false_negative
+NCT03952585,cisplatin,DNA,cancer NOS,small_molecule,0.11413383491836115,false_negative
+NCT06703346,cyclophosphamide,DNA,cancer NOS,small_molecule,0.14611778021199243,false_negative
+NCT03929666,capecitabine,TYMS,colorectal cancer,small_molecule,0.14856164999883884,false_negative
+NCT04968015,venetoclax,BCL2,AML,small_molecule,0.15819129096782433,false_negative
+NCT04725994,irinotecan,TOP1,gastric cancer,small_molecule,0.158731997109167,false_negative
+NCT05839626,unmapped,UNKNOWN,multiple myeloma,unknown,0.15987753245536354,false_negative
+NCT04346888,unmapped,UNKNOWN,cancer NOS,unknown,0.18446589203378047,false_negative
+NCT04809467,unmapped,UNKNOWN,CLL,unknown,0.18800776052134444,false_negative
+NCT05554354,binimetinib,MAP2K1,breast cancer,small_molecule,0.19420125125068302,false_negative
+NCT04305054,pembrolizumab,PDCD1,melanoma,antibody,0.1956707582480935,false_negative
+NCT04003623,unmapped,UNKNOWN,solid tumors,unknown,0.2073639651675373,false_negative
+NCT04193553,lenvatinib,VEGFR2,cancer NOS,small_molecule,0.2276550040879623,false_negative
+NCT03930953,rituximab,MS4A1,lymphoma,antibody,0.22789951592429245,false_negative
+NCT03873493,venetoclax,BCL2,cancer NOS,small_molecule,0.2333994065125242,false_negative
+NCT03900637,letrozole,CYP19A1,breast cancer,small_molecule,0.23729994382523226,false_negative
+NCT03761056,cyclophosphamide,DNA,lymphoma,small_molecule,0.23782747152619335,false_negative
+NCT04629508,unmapped,UNKNOWN,cancer NOS,unknown,0.24021101708670675,false_negative
+NCT05573555,ribociclib,CDK4,breast cancer,small_molecule,0.2513508604881195,false_negative
+NCT05428969,venetoclax,BCL2,AML,small_molecule,0.2584493082714197,false_negative
+NCT04700072,pembrolizumab,PDCD1,melanoma,antibody,0.26599160554928747,false_negative
+NCT04828486,pembrolizumab,PDCD1,hepatocellular carcinoma,antibody,0.2732658498538431,false_negative
+NCT05858177,temozolomide,DNA,glioma,small_molecule,0.2769108426090572,false_negative
+NCT04453384,unmapped,UNKNOWN,cancer NOS,unknown,0.27900796552729223,false_negative
+NCT05044897,unmapped,UNKNOWN,HNSCC,unknown,0.2812967722221146,false_negative
+NCT05309629,carboplatin,DNA,lung cancer NOS,small_molecule,0.2838424405500373,false_negative
+NCT04489173,unmapped,UNKNOWN,breast cancer,unknown,0.28559980112067995,false_negative
+NCT05775900,cetuximab,EGFR,colorectal cancer,antibody,0.2972864451215501,false_negative
+NCT02958852,letrozole,CYP19A1,breast cancer,small_molecule,0.29887220071880893,false_negative
+NCT03992339,unmapped,UNKNOWN,DLBCL,unknown,0.31148314251516623,false_negative
+NCT04827953,gemcitabine,RRM1,pancreatic cancer,small_molecule,0.3204768348597073,false_negative
+NCT06425302,rituximab,MS4A1,lymphoma,antibody,0.32678978141926457,false_negative
+NCT04713046,unmapped,UNKNOWN,cancer NOS,unknown,0.32710870644742623,false_negative
+NCT06359041,unmapped,UNKNOWN,cancer NOS,unknown,0.32798101840460253,false_negative
+NCT04013854,nivolumab,PDCD1,melanoma,antibody,0.3353819957123823,false_negative
+NCT06865352,unmapped,UNKNOWN,AML,unknown,0.3531747273144819,false_negative
+NCT05011019,unmapped,UNKNOWN,cancer NOS,unknown,0.3607566448621431,false_negative
+NCT04758507,unmapped,UNKNOWN,renal cell carcinoma,unknown,0.364050198475081,false_negative
+NCT05120271,unmapped,UNKNOWN,hepatocellular carcinoma,unknown,0.38255553664326347,false_negative
+NCT03817398,unmapped,UNKNOWN,cancer NOS,unknown,0.3893200953797444,false_negative
+NCT04154189,lenvatinib,VEGFR2,sarcoma,small_molecule,0.3900528491033841,false_negative
+NCT04954001,unmapped,UNKNOWN,cancer NOS,unknown,0.39387865068829464,false_negative
+NCT05845814,pembrolizumab,PDCD1,bladder cancer,antibody,0.3949853848649118,false_negative
+NCT03677141,cyclophosphamide,DNA,lymphoma,small_molecule,0.39938290050252495,false_negative
+NCT04671303,unmapped,UNKNOWN,lung cancer NOS,unknown,0.40037285239227544,false_negative
+NCT05189197,zanubrutinib,BTK,DLBCL,small_molecule,0.40134953752513947,false_negative
+NCT05351021,unmapped,UNKNOWN,breast cancer,unknown,0.4074604774399421,false_negative
+NCT05467670,pembrolizumab,PDCD1,ovarian cancer,antibody,0.4112194094141704,false_negative
+NCT05496231,unmapped,UNKNOWN,cancer NOS,unknown,0.41846518742696875,false_negative
+NCT04243122,unmapped,UNKNOWN,cancer NOS,unknown,0.4224429798544068,false_negative
+NCT04077723,obinutuzumab,MS4A1,lymphoma,antibody,0.43380085863541096,false_negative
+NCT06521775,unmapped,UNKNOWN,cancer NOS,unknown,0.4343246658694035,false_negative
+NCT05355597,unmapped,UNKNOWN,cancer NOS,unknown,0.43555382801718173,false_negative
+NCT04560127,unmapped,UNKNOWN,thyroid cancer,unknown,0.44314610064906995,false_negative
+NCT05994001,unmapped,UNKNOWN,cancer NOS,unknown,0.44642135528807014,false_negative
+NCT06268574,unmapped,UNKNOWN,AML,unknown,0.45555944765200157,false_negative
+NCT04231981,unmapped,UNKNOWN,cancer NOS,unknown,0.4672639257655632,false_negative
+NCT07122063,unmapped,UNKNOWN,solid tumors,unknown,0.4774434740325926,false_negative
+NCT05282901,pembrolizumab,PDCD1,melanoma,antibody,0.4805757861584508,false_negative
+NCT04313504,niraparib,PARP1,HNSCC,small_molecule,0.48316493942458943,false_negative
+NCT05561751,unmapped,UNKNOWN,multiple myeloma,unknown,0.4856970732602474,false_negative
