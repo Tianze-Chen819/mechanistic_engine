@@ -8,6 +8,7 @@ v7 FIXES:
 """
 
 import logging
+import os
 from pathlib import Path
 
 # ── Directories ──────────────────────────────────────────────────────────────
@@ -47,6 +48,21 @@ RANDOM_SEED      = 42
 # With cutoff 2015: ~150+ test trials — stable AUC estimates
 TEST_YEAR_CUTOFF = 2015
 CV_FOLDS         = 5
+
+# ── Optional deep learning branch ────────────────────────────────────────────
+# Disabled by default. This branch complements the tree baselines; it does not
+# replace RandomForest/LightGBM and it reuses the same temporal split.
+RUN_DEEP_EXPERIMENTS = os.getenv("RUN_DEEP_EXPERIMENTS", "0") == "1"
+DEEP_LABEL_COL = os.getenv("DEEP_LABEL_COL", "label_permissive")
+DEEP_FEATURE_SET = os.getenv("DEEP_FEATURE_SET", "composite")
+
+DEEP_BATCH_SIZE = int(os.getenv("DEEP_BATCH_SIZE", "64"))
+DEEP_EPOCHS = int(os.getenv("DEEP_EPOCHS", "100"))
+DEEP_PATIENCE = int(os.getenv("DEEP_PATIENCE", "15"))
+DEEP_LR = float(os.getenv("DEEP_LR", "0.001"))
+DEEP_WEIGHT_DECAY = float(os.getenv("DEEP_WEIGHT_DECAY", "0.0001"))
+
+USE_PRETRAINED_EMBEDDINGS = os.getenv("USE_PRETRAINED_EMBEDDINGS", "0") == "1"
 
 # ── Label construction ────────────────────────────────────────────────────────
 POSITIVE_TEXT_TRIGGERS = [

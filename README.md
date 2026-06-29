@@ -32,6 +32,27 @@ The pipeline takes ~15-20 minutes (mostly API queries, cached after first run).
 To skip API calls and use curated data only (faster, ~2 minutes):
 - Edit `config.py` and set `USE_REAL_APIS = False`
 
+## Optional Deep Learning Branch
+
+The default pipeline trains the existing RandomForest/LightGBM baselines. An
+optional complementary branch adds learned drug/target/disease embeddings with a
+small MLP and TrialTransformer. It does not change `labels.py` or replace the
+tree models.
+
+```bash
+pip install -r requirements-deep.txt
+RUN_DEEP_EXPERIMENTS=1 python run_pipeline.py
+```
+
+After `run_pipeline.py` has produced the feature matrix, the deep branch can
+also be run standalone:
+
+```bash
+python run_deep_experiments.py
+```
+
+More details are in `docs/deep_learning_branch.md`.
+
 ## Output Files
 
 | File | Description |
@@ -61,7 +82,9 @@ modeling.py            - Model training, evaluation, calibration
 counterfactual.py      - Counterfactual analysis module
 reporting.py           - Reports, sensitivity analysis, cross-validation
 run_pipeline.py        - Main pipeline runner
+run_deep_experiments.py - Optional standalone deep-learning runner
 requirements.txt       - Python dependencies
+requirements-deep.txt  - Optional PyTorch dependency for deep models
 README.md              - This file
 ```
 

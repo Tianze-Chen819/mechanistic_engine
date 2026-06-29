@@ -19,7 +19,7 @@ import pandas as pd
 from pathlib import Path
 from config import (
     DATA_DIR, REPORT_DIR, FIG_DIR, MODEL_DIR, TEST_YEAR_CUTOFF,
-    RANDOM_SEED, log,
+    RANDOM_SEED, log, RUN_DEEP_EXPERIMENTS, DEEP_FEATURE_SET, DEEP_LABEL_COL,
 )
 
 # ── Step imports ──────────────────────────────────────────────────────────────
@@ -470,11 +470,21 @@ def main():
     # ── STEP 6: Features ─────────────────────────────────────────────────────
     print("\n[STEP 6] Computing features (pair-level + missingness indicators)...")
     df = compute_all_features(df, pair_data, target_data)
+    try:
+        from embedding_features import apply_precomputed_cbio_features
+        df = apply_precomputed_cbio_features(df)
+    except Exception as e:
+        log.warning(f"Precomputed cBioPortal merge skipped: {e}")
 
     feature_cols = [c for c in df.columns
                     if c in ALL_RAW_FEATURES
                     or c in ["CDS", "TDS", "BFS", "MCS", "TWS", "EMS", "BIOLOGY_SCORE"]
                     or c.endswith("_missing")]
+    df.to_csv(DATA_DIR / "full_feature_matrix.csv", index=False)
+    try:
+        df.to_parquet(DATA_DIR / "full_feature_matrix.parquet", index=False)
+    except Exception:
+        pass
 
     # ── STEP 7: Modeling dataset ──────────────────────────────────────────────
     print("\n[STEP 7] Building modeling dataset...")
@@ -492,6 +502,23 @@ def main():
     model_output = train_all_models(data)
     trained_models = model_output["trained"]
     best_models = model_output["best"]
+
+    if RUN_DEEP_EXPERIMENTS:
+        print("\n[STEP 8B] Deep learning branch (learned embeddings)...")
+        try:
+            from modeling_deep import run_deep_experiments
+            run_deep_experiments(
+                df_features=df,
+                modeling_data=data,
+                tree_model_output=model_output,
+                feature_set=DEEP_FEATURE_SET,
+                label_col=DEEP_LABEL_COL,
+            )
+        except ImportError as e:
+            print(f"  Deep branch skipped: {e}")
+            print("  Install optional dependencies with `.venv/bin/pip install -r requirements-deep.txt`.")
+        except Exception as e:
+            log.warning(f"Deep branch failed: {e}")
 
     # ── STEP 9: Evaluation plots ──────────────────────────────────────────────
     print("\n[STEP 9] Evaluation plots...")
