@@ -1,0 +1,201 @@
+nct_id,canonical_drug,primary_target,disease,mechanism_family,genomic_evidence_coverage,ml_model_probability,hierarchical_base_rate,hierarchical_ci,pair_n_trials_seen,own_data_weight,blended_decision_score,percentile_vs_historical_profiles
+NCT00108953,sorafenib,BRAF,hepatocellular carcinoma,ras_mapk_pathway,0.89,0.136,0.248,"[0.07, 0.48]",7,0.55,0.186,29.0
+NCT02434081,nivolumab,PDCD1,nsclc,immune_checkpoint,0.67,0.2,0.173,"[0.03, 0.39]",6,0.4,0.184,67.7
+NCT03570619,nivolumab,PDCD1,solid tumors,immune_checkpoint,0.67,0.14,0.192,"[0.03, 0.43]",5,0.37,0.173,52.8
+NCT01286077,bortezomib,PSMB5,multiple myeloma,proteostasis_immunomodulatory,0.89,0.25,0.319,"[0.14, 0.53]",8,0.51,0.284,89.7
+NCT01051557,temsirolimus,MTOR,glioblastoma,cell_cycle,0.89,0.113,0.124,"[0.01, 0.36]",1,0.12,0.122,3.1
+NCT03321630,pembrolizumab,PDCD1,gastric cancer,immune_checkpoint,0.67,0.14,0.288,"[0.05, 0.61]",2,0.22,0.255,52.8
+NCT01935934,cabozantinib,MET,endometrial cancer,growth_factor_kinase,0.89,0.136,0.13,"[0.00, 0.43]",1,0.19,0.131,29.0
+NCT02939651,pembrolizumab,PDCD1,cancer nos,immune_checkpoint,0.67,0.14,0.078,"[0.01, 0.19]",18,0.55,0.112,52.8
+NCT00111839,pemetrexed,TYMS,nsclc,cytotoxic_chemo,0.56,0.174,0.338,"[0.04, 0.74]",2,0.3,0.289,65.2
+NCT03674112,trastuzumab,ERBB2,breast cancer,growth_factor_kinase,0.89,0.244,0.268,"[0.14, 0.42]",21,0.76,0.25,86.2
+NCT02536742,palbociclib,CDK4,breast cancer,cell_cycle,0.89,0.187,0.185,"[0.04, 0.41]",4,0.34,0.185,66.5
+NCT01274351,nilotinib,ABL1,leukemia,growth_factor_kinase,0.89,0.117,0.057,"[0.00, 0.20]",7,0.59,0.092,13.6
+NCT00176605,etoposide,TOP2A,prostate cancer,cytotoxic_chemo,0.56,0.05,0.095,"[0.00, 0.44]",1,0.2,0.086,0.0
+NCT00611351,cyclophosphamide,DNA,multiple myeloma,cytotoxic_chemo,0.33,0.136,0.03,"[0.00, 0.14]",7,0.27,0.058,29.0
+NCT01992653,rituximab,MS4A1,lymphoma,bcell_lymphoma_target,0.78,0.113,0.092,"[0.03, 0.19]",24,0.59,0.105,3.1
+NCT03322267,pembrolizumab,PDCD1,cancer nos,immune_checkpoint,0.67,0.14,0.078,"[0.01, 0.19]",18,0.55,0.112,52.8
+NCT00923936,bevacizumab,VEGFA,cancer nos,angiogenesis,0.67,0.136,0.378,"[0.17, 0.61]",9,0.49,0.26,29.0
+NCT04644237,trastuzumab,ERBB2,nsclc,growth_factor_kinase,0.89,0.157,0.107,"[0.00, 0.36]",2,0.32,0.123,62.2
+NCT01794039,lenalidomide,CRBN,multiple myeloma,proteostasis_immunomodulatory,0.89,0.242,0.322,"[0.15, 0.52]",11,0.58,0.276,74.5
+NCT02006667,trastuzumab,ERBB2,cancer nos,growth_factor_kinase,0.89,0.157,0.242,"[0.04, 0.54]",3,0.4,0.208,62.2
+NCT00679367,lenalidomide,CRBN,multiple myeloma,proteostasis_immunomodulatory,0.89,0.242,0.322,"[0.15, 0.52]",11,0.58,0.276,74.5
+NCT04700072,pembrolizumab,PDCD1,melanoma,immune_checkpoint,0.67,0.2,0.216,"[0.04, 0.48]",4,0.33,0.211,67.7
+NCT00301964,bevacizumab,VEGFA,endometrial cancer,angiogenesis,0.67,0.136,0.105,"[0.00, 0.34]",3,0.31,0.115,29.0
+NCT02017964,carboplatin,DNA,cancer nos,cytotoxic_chemo,0.33,0.136,0.061,"[0.01, 0.16]",19,0.31,0.084,29.0
+NCT02654119,trastuzumab,ERBB2,breast cancer,growth_factor_kinase,0.89,0.244,0.268,"[0.14, 0.42]",21,0.76,0.25,86.2
+NCT04266795,venetoclax,BCL2,leukemia,bcell_lymphoma_target,0.89,0.217,0.096,"[0.00, 0.28]",2,0.18,0.118,73.0
+NCT02927301,atezolizumab,CD274,nsclc,immune_checkpoint,0.67,0.287,0.273,"[0.08, 0.52]",6,0.4,0.279,90.9
+NCT01093586,cyclophosphamide,DNA,lymphoma,cytotoxic_chemo,0.33,0.136,0.03,"[0.00, 0.14]",7,0.27,0.058,29.0
+NCT00399529,trastuzumab,ERBB2,breast cancer,growth_factor_kinase,0.89,0.244,0.268,"[0.14, 0.42]",21,0.76,0.25,86.2
+NCT00859937,dasatinib,ABL1,cancer nos,growth_factor_kinase,0.89,0.136,0.079,"[0.00, 0.27]",4,0.47,0.106,29.0
+NCT01087970,cetuximab,EGFR,hnscc,growth_factor_kinase,0.89,0.133,0.31,"[0.12, 0.54]",8,0.61,0.202,14.7
+NCT00335829,bevacizumab,VEGFA,hepatocellular carcinoma,angiogenesis,0.67,0.136,0.154,"[0.00, 0.48]",1,0.15,0.151,29.0
+NCT00494481,docetaxel,TUBB,breast cancer,cytotoxic_chemo,0.33,0.133,0.363,"[0.16, 0.60]",10,0.28,0.298,14.7
+NCT00577122,cyclophosphamide,DNA,breast cancer,cytotoxic_chemo,0.33,0.136,0.187,"[0.02, 0.46]",5,0.25,0.175,29.0
+NCT00767819,everolimus,MTOR,cancer nos,cell_cycle,0.89,0.113,0.109,"[0.00, 0.32]",2,0.21,0.11,3.1
+NCT01962103,paclitaxel,TUBB,melanoma,cytotoxic_chemo,0.33,0.133,0.07,"[0.00, 0.33]",2,0.18,0.081,14.7
+NCT01763788,gemcitabine,RRM1,nsclc,cytotoxic_chemo,0.33,0.133,0.22,"[0.02, 0.53]",4,0.23,0.2,14.7
+NCT02593175,panitumumab,EGFR,breast cancer,growth_factor_kinase,0.89,0.113,0.107,"[0.00, 0.36]",2,0.32,0.109,3.1
+NCT00712881,trastuzumab,ERBB2,breast cancer,growth_factor_kinase,0.89,0.244,0.268,"[0.14, 0.42]",21,0.76,0.25,86.2
+NCT00859222,bevacizumab,VEGFA,cancer nos,angiogenesis,0.67,0.136,0.378,"[0.17, 0.61]",9,0.49,0.26,29.0
+NCT03093831,ibrutinib,BTK,lymphoma,growth_factor_kinase,0.89,0.187,0.21,"[0.03, 0.48]",4,0.47,0.199,66.5
+NCT00126672,unmapped,UNKNOWN,renal cell carcinoma,unmapped,0.0,0.632,0.619,"[0.27, 0.91]",2,0.0,0.619,92.9
+NCT04452877,dabrafenib,BRAF,cancer nos,ras_mapk_pathway,0.89,0.136,0.217,"[0.04, 0.48]",4,0.43,0.182,29.0
+NCT01951157,gemcitabine,RRM1,nsclc,cytotoxic_chemo,0.33,0.133,0.22,"[0.02, 0.53]",4,0.23,0.2,14.7
+NCT00216203,cetuximab,EGFR,nsclc,growth_factor_kinase,0.89,0.167,0.191,"[0.05, 0.38]",10,0.65,0.175,63.6
+NCT03101254,vemurafenib,BRAF,melanoma,ras_mapk_pathway,0.89,0.116,0.096,"[0.00, 0.30]",4,0.43,0.105,13.0
+NCT03892642,avelumab,CD274,bladder cancer,immune_checkpoint,0.67,0.287,0.247,"[0.04, 0.54]",3,0.29,0.258,90.9
+NCT02454842,unmapped,UNKNOWN,nsclc,unmapped,0.0,0.632,0.19,"[0.02, 0.48]",3,0.0,0.19,92.9
+NCT00361231,bevacizumab,VEGFA,bladder cancer,angiogenesis,0.67,0.136,0.154,"[0.00, 0.48]",1,0.15,0.151,29.0
+NCT00287872,bortezomib,PSMB5,multiple myeloma,proteostasis_immunomodulatory,0.89,0.25,0.319,"[0.14, 0.53]",8,0.51,0.284,89.7
+NCT02924883,atezolizumab,CD274,breast cancer,immune_checkpoint,0.67,0.207,0.121,"[0.00, 0.38]",2,0.22,0.14,70.5
+NCT01350245,cyclophosphamide,DNA,leukemia,cytotoxic_chemo,0.33,0.136,0.027,"[0.00, 0.13]",8,0.27,0.057,29.0
+NCT02915783,lenvatinib,VEGFR2,renal cell carcinoma,angiogenesis,0.78,0.242,0.235,"[0.07, 0.46]",8,0.55,0.239,74.5
+NCT02532257,ibrutinib,BTK,lymphoma,growth_factor_kinase,0.89,0.187,0.21,"[0.03, 0.48]",4,0.47,0.199,66.5
+NCT02511132,gemcitabine,RRM1,cancer nos,cytotoxic_chemo,0.33,0.133,0.163,"[0.02, 0.41]",6,0.26,0.155,14.7
+NCT00744900,cisplatin,DNA,cancer nos,cytotoxic_chemo,0.33,0.136,0.061,"[0.01, 0.16]",19,0.31,0.084,29.0
+NCT03197467,pembrolizumab,PDCD1,nsclc,immune_checkpoint,0.67,0.2,0.173,"[0.03, 0.39]",6,0.4,0.184,67.7
+NCT02195011,regorafenib,VEGFR2,colorectal cancer,angiogenesis,0.78,0.242,0.258,"[0.07, 0.50]",7,0.53,0.249,74.5
+NCT00940316,erlotinib,EGFR,colorectal cancer,growth_factor_kinase,0.89,0.113,0.039,"[0.00, 0.14]",12,0.68,0.09,3.1
+NCT01053949,pomalidomide,CRBN,multiple myeloma,proteostasis_immunomodulatory,0.89,0.242,0.322,"[0.15, 0.52]",11,0.58,0.276,74.5
+NCT01135498,erlotinib,EGFR,colorectal cancer,growth_factor_kinase,0.89,0.113,0.039,"[0.00, 0.14]",12,0.68,0.09,3.1
+NCT01058655,everolimus,MTOR,cancer nos,cell_cycle,0.89,0.113,0.109,"[0.00, 0.32]",2,0.21,0.11,3.1
+NCT01146795,bevacizumab,VEGFA,ovarian cancer,angiogenesis,0.67,0.136,0.072,"[0.00, 0.24]",6,0.43,0.099,29.0
+NCT00460109,rituximab,MS4A1,lymphoma,bcell_lymphoma_target,0.78,0.113,0.092,"[0.03, 0.19]",24,0.59,0.105,3.1
+NCT00723099,cyclophosphamide,DNA,lymphoma,cytotoxic_chemo,0.33,0.136,0.03,"[0.00, 0.14]",7,0.27,0.058,29.0
+NCT02178436,gemcitabine,RRM1,pancreatic cancer,cytotoxic_chemo,0.33,0.133,0.034,"[0.00, 0.16]",6,0.26,0.059,14.7
+NCT01660711,oxaliplatin,DNA,pancreatic cancer,cytotoxic_chemo,0.33,0.136,0.07,"[0.00, 0.33]",2,0.18,0.082,29.0
+NCT03510871,nivolumab,PDCD1,hepatocellular carcinoma,immune_checkpoint,0.67,0.14,0.288,"[0.05, 0.61]",2,0.22,0.255,52.8
+NCT00089999,lapatinib,ERBB2,breast cancer,growth_factor_kinase,0.89,0.244,0.268,"[0.14, 0.42]",21,0.76,0.25,86.2
+NCT03990571,avelumab,CD274,cancer nos,immune_checkpoint,0.67,0.207,0.21,"[0.06, 0.41]",9,0.46,0.208,70.5
+NCT00578864,cisplatin,DNA,cancer nos,cytotoxic_chemo,0.33,0.136,0.061,"[0.01, 0.16]",19,0.31,0.084,29.0
+NCT03828799,regorafenib,VEGFR2,colorectal cancer,angiogenesis,0.78,0.242,0.258,"[0.07, 0.50]",7,0.53,0.249,74.5
+NCT00071006,axitinib,VEGFR2,leukemia,angiogenesis,0.78,0.242,0.154,"[0.00, 0.48]",1,0.18,0.169,74.5
+NCT00103207,cetuximab,EGFR,cancer nos,growth_factor_kinase,0.89,0.133,0.082,"[0.01, 0.20]",16,0.72,0.119,14.7
+NCT02297139,dasatinib,ABL1,cancer nos,growth_factor_kinase,0.89,0.136,0.079,"[0.00, 0.27]",4,0.47,0.106,29.0
+NCT00305877,cetuximab,EGFR,pancreatic cancer,growth_factor_kinase,0.89,0.133,0.186,"[0.03, 0.43]",5,0.52,0.159,14.7
+NCT03873493,ibrutinib,BTK,leukemia,growth_factor_kinase,0.89,0.207,0.242,"[0.04, 0.54]",3,0.4,0.228,70.1
+NCT03041311,atezolizumab,CD274,cancer nos,immune_checkpoint,0.67,0.207,0.21,"[0.06, 0.41]",9,0.46,0.208,70.5
+NCT01996332,erlotinib,EGFR,nsclc,growth_factor_kinase,0.89,0.167,0.191,"[0.05, 0.38]",10,0.65,0.175,63.6
+NCT01532687,pazopanib,VEGFR2,cancer nos,angiogenesis,0.78,0.242,0.297,"[0.11, 0.52]",9,0.57,0.266,74.5
+NCT04933695,sotorasib,KRAS,nsclc,ras_mapk_pathway,0.78,0.473,0.342,"[0.07, 0.69]",1,0.15,0.361,92.6
+NCT00166439,oxaliplatin,DNA,lymphoma,cytotoxic_chemo,0.33,0.136,0.03,"[0.00, 0.14]",7,0.27,0.058,29.0
+NCT00691301,cisplatin,DNA,cervical cancer,cytotoxic_chemo,0.33,0.136,0.07,"[0.00, 0.33]",2,0.18,0.082,29.0
+NCT00598507,unmapped,UNKNOWN,melanoma,unmapped,0.0,0.632,0.619,"[0.27, 0.91]",2,0.0,0.619,92.9
+NCT01126736,pemetrexed,TYMS,nsclc,cytotoxic_chemo,0.56,0.174,0.338,"[0.04, 0.74]",2,0.3,0.289,65.2
+NCT00390611,sorafenib,BRAF,ovarian cancer,ras_mapk_pathway,0.89,0.136,0.127,"[0.00, 0.38]",2,0.28,0.13,29.0
+NCT02985957,nivolumab,PDCD1,prostate cancer,immune_checkpoint,0.67,0.14,0.104,"[0.00, 0.33]",3,0.29,0.114,52.8
+NCT00409565,cetuximab,EGFR,hnscc,growth_factor_kinase,0.89,0.133,0.31,"[0.12, 0.54]",8,0.61,0.202,14.7
+NCT00731211,pazopanib,VEGFR2,renal cell carcinoma,angiogenesis,0.78,0.242,0.235,"[0.07, 0.46]",8,0.55,0.239,74.5
+NCT01462695,sunitinib,VEGFR2,cancer nos,angiogenesis,0.78,0.242,0.297,"[0.11, 0.52]",9,0.57,0.266,74.5
+NCT01750281,docetaxel,TUBB,nsclc,cytotoxic_chemo,0.33,0.133,0.07,"[0.00, 0.33]",2,0.18,0.081,14.7
+NCT00004092,carboplatin,DNA,breast cancer,cytotoxic_chemo,0.33,0.136,0.187,"[0.02, 0.46]",5,0.25,0.175,29.0
+NCT00586495,sorafenib,BRAF,renal cell carcinoma,ras_mapk_pathway,0.89,0.136,0.096,"[0.00, 0.30]",4,0.43,0.113,29.0
+NCT00039195,rituximab,MS4A1,lymphoma,bcell_lymphoma_target,0.78,0.113,0.092,"[0.03, 0.19]",24,0.59,0.105,3.1
+NCT03977467,atezolizumab,CD274,nsclc,immune_checkpoint,0.67,0.287,0.273,"[0.08, 0.52]",6,0.4,0.279,90.9
+NCT00372775,sunitinib,VEGFR2,nsclc,angiogenesis,0.78,0.242,0.154,"[0.00, 0.48]",1,0.18,0.169,74.5
+NCT00515411,trastuzumab,ERBB2,gastric cancer,growth_factor_kinase,0.89,0.244,0.347,"[0.06, 0.71]",1,0.19,0.327,89.5
+NCT00271609,bevacizumab,VEGFA,cancer nos,angiogenesis,0.67,0.136,0.378,"[0.17, 0.61]",9,0.49,0.26,29.0
+NCT01611259,rituximab,MS4A1,lymphoma,bcell_lymphoma_target,0.78,0.113,0.092,"[0.03, 0.19]",24,0.59,0.105,3.1
+NCT00371254,dasatinib,ABL1,breast cancer,growth_factor_kinase,0.89,0.136,0.242,"[0.04, 0.54]",3,0.4,0.199,29.0
+NCT03958045,nivolumab,PDCD1,cancer nos,immune_checkpoint,0.67,0.14,0.078,"[0.01, 0.19]",18,0.55,0.112,52.8
+NCT02312245,bevacizumab,VEGFA,ovarian cancer,angiogenesis,0.67,0.136,0.072,"[0.00, 0.24]",6,0.43,0.099,29.0
+NCT03534180,venetoclax,BCL2,lymphoma,bcell_lymphoma_target,0.89,0.217,0.181,"[0.03, 0.40]",3,0.25,0.19,73.0
+NCT03194373,palbociclib,CDK4,hnscc,cell_cycle,0.89,0.136,0.124,"[0.01, 0.36]",1,0.12,0.125,29.0
+NCT05653427,unmapped,UNKNOWN,hepatocellular carcinoma,unmapped,0.0,0.632,0.423,"[0.11, 0.77]",2,0.0,0.423,92.9
+NCT01418742,panitumumab,EGFR,colorectal cancer,growth_factor_kinase,0.89,0.113,0.039,"[0.00, 0.14]",12,0.68,0.09,3.1
+NCT02300545,pazopanib,VEGFR2,cancer nos,angiogenesis,0.78,0.242,0.297,"[0.11, 0.52]",9,0.57,0.266,74.5
+NCT05687617,unmapped,UNKNOWN,gastric cancer,unmapped,0.0,0.632,0.282,"[0.03, 0.66]",1,0.0,0.282,92.9
+NCT01057589,cetuximab,EGFR,hnscc,growth_factor_kinase,0.89,0.133,0.31,"[0.12, 0.54]",8,0.61,0.202,14.7
+NCT00403403,bevacizumab,VEGFA,cancer nos,angiogenesis,0.67,0.136,0.378,"[0.17, 0.61]",9,0.49,0.26,29.0
+NCT01492088,brentuximab vedotin,TNFRSF8,lymphoma,bcell_lymphoma_target,0.67,0.237,0.181,"[0.03, 0.40]",3,0.19,0.191,74.0
+NCT04118166,nivolumab,PDCD1,cancer nos,immune_checkpoint,0.67,0.14,0.078,"[0.01, 0.19]",18,0.55,0.112,52.8
+NCT02041429,ruxolitinib,JAK1,breast cancer,growth_factor_kinase,0.67,0.138,0.347,"[0.06, 0.71]",1,0.14,0.317,52.5
+NCT00679783,unmapped,UNKNOWN,ovarian cancer,unmapped,0.0,0.632,0.567,"[0.30, 0.81]",6,0.0,0.567,92.9
+NCT00667394,bevacizumab,VEGFA,glioblastoma,angiogenesis,0.67,0.136,0.154,"[0.00, 0.48]",1,0.15,0.151,29.0
+NCT00085566,gefitinib,EGFR,prostate cancer,growth_factor_kinase,0.89,0.133,0.13,"[0.00, 0.43]",1,0.19,0.131,14.7
+NCT00948922,bortezomib,PSMB5,multiple myeloma,proteostasis_immunomodulatory,0.89,0.25,0.319,"[0.14, 0.53]",8,0.51,0.284,89.7
+NCT00968253,everolimus,MTOR,leukemia,cell_cycle,0.89,0.113,0.109,"[0.00, 0.32]",2,0.21,0.11,3.1
+NCT00119262,bevacizumab,VEGFA,breast cancer,angiogenesis,0.67,0.136,0.263,"[0.05, 0.57]",3,0.31,0.223,29.0
+NCT00672594,sunitinib,VEGFR2,prostate cancer,angiogenesis,0.78,0.242,0.312,"[0.06, 0.65]",2,0.29,0.291,74.5
+NCT05085002,letrozole,CYP19A1,breast cancer,hormonal,0.89,0.092,0.107,"[0.01, 0.29]",3,0.26,0.103,1.6
+NCT02317991,ramucirumab,KDR,cancer nos,angiogenesis,0.33,0.097,0.105,"[0.00, 0.34]",3,0.16,0.104,2.0
+NCT01853618,tremelimumab,CTLA4,hepatocellular carcinoma,immune_checkpoint,0.67,0.133,0.146,"[0.00, 0.45]",1,0.13,0.144,14.7
+NCT00182689,sorafenib,BRAF,cancer nos,ras_mapk_pathway,0.89,0.136,0.217,"[0.04, 0.48]",4,0.43,0.182,29.0
+NCT00313560,erlotinib,EGFR,pancreatic cancer,growth_factor_kinase,0.89,0.133,0.186,"[0.03, 0.43]",5,0.52,0.159,14.7
+NCT00360360,erlotinib,EGFR,cancer nos,growth_factor_kinase,0.89,0.133,0.082,"[0.01, 0.20]",16,0.72,0.119,14.7
+NCT00161213,imatinib,ABL1,pancreatic cancer,growth_factor_kinase,0.89,0.136,0.13,"[0.00, 0.43]",1,0.19,0.131,29.0
+NCT00137423,sunitinib,VEGFR2,renal cell carcinoma,angiogenesis,0.78,0.242,0.235,"[0.07, 0.46]",8,0.55,0.239,74.5
+NCT02311361,durvalumab,CD274,pancreatic cancer,immune_checkpoint,0.67,0.207,0.146,"[0.00, 0.45]",1,0.13,0.154,70.5
+NCT03211117,pembrolizumab,PDCD1,thyroid cancer,immune_checkpoint,0.67,0.14,0.146,"[0.00, 0.45]",1,0.13,0.145,52.8
+NCT01262820,pazopanib,VEGFR2,cancer nos,angiogenesis,0.78,0.242,0.297,"[0.11, 0.52]",9,0.57,0.266,74.5
+NCT00881296,gemcitabine,RRM1,nsclc,cytotoxic_chemo,0.33,0.133,0.22,"[0.02, 0.53]",4,0.23,0.2,14.7
+NCT00345540,carboplatin,DNA,ovarian cancer,cytotoxic_chemo,0.33,0.136,0.045,"[0.00, 0.22]",4,0.23,0.066,29.0
+NCT02729896,atezolizumab,CD274,lymphoma,immune_checkpoint,0.67,0.207,0.288,"[0.05, 0.61]",2,0.22,0.27,70.5
+NCT03365882,cetuximab,EGFR,colorectal cancer,growth_factor_kinase,0.89,0.113,0.039,"[0.00, 0.14]",12,0.68,0.09,3.1
+NCT01664182,sorafenib,BRAF,renal cell carcinoma,ras_mapk_pathway,0.89,0.136,0.096,"[0.00, 0.30]",4,0.43,0.113,29.0
+NCT00669162,docetaxel,TUBB,prostate cancer,cytotoxic_chemo,0.33,0.133,0.045,"[0.00, 0.22]",4,0.23,0.066,14.7
+NCT00387959,rituximab,MS4A1,leukemia,bcell_lymphoma_target,0.78,0.113,0.059,"[0.00, 0.18]",8,0.4,0.081,3.1
+NCT00267696,bevacizumab,VEGFA,ovarian cancer,angiogenesis,0.67,0.136,0.072,"[0.00, 0.24]",6,0.43,0.099,29.0
+NCT00687297,carboplatin,DNA,nsclc,cytotoxic_chemo,0.33,0.136,0.039,"[0.00, 0.18]",5,0.25,0.063,29.0
+NCT00567359,erlotinib,EGFR,nsclc,growth_factor_kinase,0.89,0.167,0.191,"[0.05, 0.38]",10,0.65,0.175,63.6
+NCT00774046,etoposide,TOP2A,leukemia,cytotoxic_chemo,0.56,0.05,0.055,"[0.00, 0.26]",3,0.35,0.053,0.0
+NCT02102490,abemaciclib,CDK4,breast cancer,cell_cycle,0.89,0.187,0.185,"[0.04, 0.41]",4,0.34,0.185,66.5
+NCT03369223,nivolumab,PDCD1,cancer nos,immune_checkpoint,0.67,0.14,0.078,"[0.01, 0.19]",18,0.55,0.112,52.8
+NCT02130466,pembrolizumab,PDCD1,solid tumors,immune_checkpoint,0.67,0.14,0.192,"[0.03, 0.43]",5,0.37,0.173,52.8
+NCT03296137,nivolumab,PDCD1,cancer nos,immune_checkpoint,0.67,0.14,0.078,"[0.01, 0.19]",18,0.55,0.112,52.8
+NCT01004003,sorafenib,BRAF,hepatocellular carcinoma,ras_mapk_pathway,0.89,0.136,0.248,"[0.07, 0.48]",7,0.55,0.186,29.0
+NCT02597322,axitinib,VEGFR2,renal cell carcinoma,angiogenesis,0.78,0.242,0.235,"[0.07, 0.46]",8,0.55,0.239,74.5
+NCT01088529,abiraterone,CYP17A1,prostate cancer,hormonal,0.89,0.113,0.089,"[0.01, 0.25]",5,0.36,0.098,3.1
+NCT03694002,ramucirumab,KDR,cancer nos,angiogenesis,0.33,0.097,0.105,"[0.00, 0.34]",3,0.16,0.104,2.0
+NCT00185588,gemcitabine,RRM1,pancreatic cancer,cytotoxic_chemo,0.33,0.133,0.034,"[0.00, 0.16]",6,0.26,0.059,14.7
+NCT01211483,erlotinib,EGFR,nsclc,growth_factor_kinase,0.89,0.167,0.191,"[0.05, 0.38]",10,0.65,0.175,63.6
+NCT01014351,everolimus,MTOR,melanoma,cell_cycle,0.89,0.113,0.124,"[0.01, 0.36]",1,0.12,0.122,3.1
+NCT03760666,unmapped,UNKNOWN,leukemia,unmapped,0.0,0.632,0.513,"[0.24, 0.78]",5,0.0,0.513,92.9
+NCT00720356,erlotinib,EGFR,cancer nos,growth_factor_kinase,0.89,0.133,0.082,"[0.01, 0.20]",16,0.72,0.119,14.7
+NCT00439231,lenalidomide,CRBN,leukemia,proteostasis_immunomodulatory,0.89,0.242,0.205,"[0.05, 0.42]",6,0.45,0.221,74.5
+NCT03069937,docetaxel,TUBB,cancer nos,cytotoxic_chemo,0.33,0.133,0.039,"[0.00, 0.18]",5,0.25,0.062,14.7
+NCT01216683,rituximab,MS4A1,lymphoma,bcell_lymphoma_target,0.78,0.113,0.092,"[0.03, 0.19]",24,0.59,0.105,3.1
+NCT03459222,nivolumab,PDCD1,cancer nos,immune_checkpoint,0.67,0.14,0.078,"[0.01, 0.19]",18,0.55,0.112,52.8
+NCT01927627,enzalutamide,AR,prostate cancer,hormonal,0.89,0.242,0.217,"[0.07, 0.41]",7,0.44,0.228,85.1
+NCT00787761,cyclophosphamide,DNA,multiple myeloma,cytotoxic_chemo,0.33,0.136,0.03,"[0.00, 0.14]",7,0.27,0.058,29.0
+NCT00859469,gemcitabine,RRM1,cancer nos,cytotoxic_chemo,0.33,0.133,0.163,"[0.02, 0.41]",6,0.26,0.155,14.7
+NCT00271505,bevacizumab,VEGFA,nsclc,angiogenesis,0.67,0.136,0.091,"[0.00, 0.30]",4,0.36,0.107,29.0
+NCT02453594,pembrolizumab,PDCD1,lymphoma,immune_checkpoint,0.67,0.2,0.303,"[0.09, 0.57]",5,0.37,0.265,67.7
+NCT00520403,bevacizumab,VEGFA,renal cell carcinoma,angiogenesis,0.67,0.136,0.125,"[0.00, 0.40]",2,0.25,0.128,29.0
+NCT00004888,trastuzumab,ERBB2,breast cancer,growth_factor_kinase,0.89,0.244,0.268,"[0.14, 0.42]",21,0.76,0.25,86.2
+NCT02661542,unmapped,UNKNOWN,solid tumors,unmapped,0.0,0.632,0.423,"[0.11, 0.77]",2,0.0,0.423,92.9
+NCT00216021,capecitabine,TYMS,breast cancer,cytotoxic_chemo,0.56,0.174,0.463,"[0.07, 0.89]",1,0.2,0.404,65.2
+NCT02801578,ibrutinib,BTK,leukemia,growth_factor_kinase,0.89,0.207,0.242,"[0.04, 0.54]",3,0.4,0.228,70.1
+NCT00602771,etoposide,TOP2A,leukemia,cytotoxic_chemo,0.56,0.05,0.055,"[0.00, 0.26]",3,0.35,0.053,0.0
+NCT01256398,dasatinib,ABL1,leukemia,growth_factor_kinase,0.89,0.117,0.057,"[0.00, 0.20]",7,0.59,0.092,13.6
+NCT00269152,cisplatin,DNA,nsclc,cytotoxic_chemo,0.33,0.136,0.039,"[0.00, 0.18]",5,0.25,0.063,29.0
+NCT02768792,pembrolizumab,PDCD1,leukemia,immune_checkpoint,0.67,0.14,0.146,"[0.00, 0.45]",1,0.13,0.145,52.8
+NCT03043664,pembrolizumab,PDCD1,pancreatic cancer,immune_checkpoint,0.67,0.14,0.104,"[0.00, 0.33]",3,0.29,0.114,52.8
+NCT02247349,nivolumab,PDCD1,cancer nos,immune_checkpoint,0.67,0.14,0.078,"[0.01, 0.19]",18,0.55,0.112,52.8
+NCT00436644,lapatinib,ERBB2,ovarian cancer,growth_factor_kinase,0.89,0.157,0.13,"[0.00, 0.43]",1,0.19,0.136,62.2
+NCT02280252,paclitaxel,TUBB,breast cancer,cytotoxic_chemo,0.33,0.133,0.363,"[0.16, 0.60]",10,0.28,0.298,14.7
+NCT02795858,ramucirumab,KDR,cancer nos,angiogenesis,0.33,0.097,0.105,"[0.00, 0.34]",3,0.16,0.104,2.0
+NCT01801111,erlotinib,EGFR,cancer nos,growth_factor_kinase,0.89,0.133,0.082,"[0.01, 0.20]",16,0.72,0.119,14.7
+NCT00550771,trastuzumab,ERBB2,breast cancer,growth_factor_kinase,0.89,0.244,0.268,"[0.14, 0.42]",21,0.76,0.25,86.2
+NCT04761198,nivolumab,PDCD1,solid tumors,immune_checkpoint,0.67,0.14,0.192,"[0.03, 0.43]",5,0.37,0.173,52.8
+NCT02420314,carboplatin,DNA,cancer nos,cytotoxic_chemo,0.33,0.136,0.061,"[0.01, 0.16]",19,0.31,0.084,29.0
+NCT00409006,gefitinib,EGFR,nsclc,growth_factor_kinase,0.89,0.167,0.191,"[0.05, 0.38]",10,0.65,0.175,63.6
+NCT04518852,sorafenib,BRAF,hepatocellular carcinoma,ras_mapk_pathway,0.89,0.136,0.248,"[0.07, 0.48]",7,0.55,0.186,29.0
+NCT02305758,bevacizumab,VEGFA,colorectal cancer,angiogenesis,0.67,0.136,0.178,"[0.03, 0.41]",6,0.43,0.16,29.0
+NCT00867321,sorafenib,BRAF,hepatocellular carcinoma,ras_mapk_pathway,0.89,0.136,0.248,"[0.07, 0.48]",7,0.55,0.186,29.0
+NCT03801304,atezolizumab,CD274,nsclc,immune_checkpoint,0.67,0.287,0.273,"[0.08, 0.52]",6,0.4,0.279,90.9
+NCT01174238,axitinib,VEGFR2,melanoma,angiogenesis,0.78,0.242,0.125,"[0.00, 0.40]",2,0.29,0.159,74.5
+NCT00562978,etoposide,TOP2A,lymphoma,cytotoxic_chemo,0.56,0.05,0.045,"[0.00, 0.22]",4,0.39,0.047,0.0
+NCT00444678,cetuximab,EGFR,colorectal cancer,growth_factor_kinase,0.89,0.113,0.039,"[0.00, 0.14]",12,0.68,0.09,3.1
+NCT01136733,lenvatinib,VEGFR2,renal cell carcinoma,angiogenesis,0.78,0.242,0.235,"[0.07, 0.46]",8,0.55,0.239,74.5
+NCT02659020,gemcitabine,RRM1,cancer nos,cytotoxic_chemo,0.33,0.133,0.163,"[0.02, 0.41]",6,0.26,0.155,14.7
+NCT02064582,enzalutamide,AR,prostate cancer,hormonal,0.89,0.242,0.217,"[0.07, 0.41]",7,0.44,0.228,85.1
+NCT02061085,unmapped,UNKNOWN,breast cancer,unmapped,0.0,0.632,0.445,"[0.17, 0.74]",4,0.0,0.445,92.9
+NCT02716974,docetaxel,TUBB,prostate cancer,cytotoxic_chemo,0.33,0.133,0.045,"[0.00, 0.22]",4,0.23,0.066,14.7
+NCT00463060,sunitinib,VEGFR2,cancer nos,angiogenesis,0.78,0.242,0.297,"[0.11, 0.52]",9,0.57,0.266,74.5
+NCT00942825,cisplatin,DNA,nsclc,cytotoxic_chemo,0.33,0.136,0.039,"[0.00, 0.18]",5,0.25,0.063,29.0
+NCT03989115,osimertinib,EGFR,solid tumors,growth_factor_kinase,0.89,0.133,0.13,"[0.00, 0.43]",1,0.19,0.131,14.7
+NCT02631590,gemcitabine,RRM1,bladder cancer,cytotoxic_chemo,0.33,0.133,0.095,"[0.00, 0.44]",1,0.12,0.1,14.7
+NCT00368355,cyclophosphamide,DNA,leukemia,cytotoxic_chemo,0.33,0.136,0.027,"[0.00, 0.13]",8,0.27,0.057,29.0
