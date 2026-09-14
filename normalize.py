@@ -16,10 +16,20 @@ from config import log
 # ============================================================
 # DRUG NORMALIZATION
 # ============================================================
-def normalize_drug(intervention_names):
+def normalize_drug(intervention_names, use_chembl_fallback=True):
     """
     Match intervention names to our drug-target database.
     Returns: (canonical_drug, targets_list, modality, moa, confidence)
+
+    Tier 3 (v9 ADDED): if no curated match, try ChEMBL's own mechanism
+    database (auto_target_mapping.py) before giving up. This is a documented,
+    auditable public-API lookup, not a guess — see that module's docstring
+    for why hand-typing more curated entries wasn't the right fix for the
+    corpus's "mostly already-validated drugs" skew. Confidence is capped at
+    0.6 (below curated matches) and the moa is tagged "chembl_auto" so
+    downstream analysis can filter these out if a stricter subset is wanted.
+    Set use_chembl_fallback=False to reproduce the old (curated-dict-only)
+    behaviour, e.g. for fast iteration without network calls.
     """
     for name in intervention_names:
         name_lower = name.lower().strip()
@@ -33,6 +43,14 @@ def normalize_drug(intervention_names):
         for drug_key, info in DRUG_TARGET_DB.items():
             if drug_key in name_lower or name_lower in drug_key:
                 return drug_key, info["targets"], info["modality"], info["moa"], 0.85
+
+    if use_chembl_fallback:
+        from auto_target_mapping import chembl_lookup
+        for name in intervention_names:
+            entry = chembl_lookup(name)
+            if entry:
+                return name.lower().strip(), entry["targets"], entry["modality"], \
+                    entry["moa"], entry["confidence"]
 
     return "unmapped", [], "unknown", "unknown", 0.10
 

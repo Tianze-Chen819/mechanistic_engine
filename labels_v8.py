@@ -3,11 +3,22 @@ labels_v8.py — Improved label construction using structured results + publicat
 
 v8 CHANGES:
   1. Structured results from ClinicalTrials.gov used as primary label source
-  2. PubMed publication signal used as secondary label source  
+  2. PubMed publication signal used as secondary label source
   3. Distinguishes completed-no-results from completed-with-negative-results
   4. Endpoint type extracted for separate model training
   5. Continuous outcome score computed where effect size is available
   6. IO drug flag added so IO/non-IO models can be trained separately
+
+v9 FIX: the priority-3 text fallback (used whenever a trial has neither a
+structured p-value nor a linked publication — most of the dataset, since the
+majority of single-arm Phase 2 oncology trials report a descriptive response
+rate with no formal hypothesis test) previously matched trigger phrases
+against `why_stopped + brief_summary + primary_outcome` combined. The last two
+are written at trial registration, before the outcome is known — see
+docs/label_audit.md, which found 100% of v7's positive labels fired only on
+those two pre-trial fields. The fallback now reads only `why_stopped`, and a
+COMPLETED trial with no post-hoc text and no approval record is left
+indeterminate rather than defaulted to negative.
 """
 
 import pandas as pd
@@ -22,7 +33,10 @@ from clients_v8_additions import fetch_all_trial_results, fetch_all_publications
 IO_TARGETS = {"PDCD1", "CD274", "CTLA4"}
 
 # Approved indications (same as labels.py)
-from labels import APPROVED_INDICATIONS, _text_signal, _termination_is_efficacy, _has_results_posted
+from labels import (
+    APPROVED_INDICATIONS, _text_signal, _termination_is_efficacy,
+    _termination_is_success, _has_results_posted,
+)
 
 def _approved_in_indication(drug: str, disease: str) -> bool:
     approved = APPROVED_INDICATIONS.get(drug.lower(), [])
@@ -41,18 +55,15 @@ def assign_labels_v8(trial, structured_results: dict, publication: dict,
     """
     status = str(trial.get("status", "")).upper()
     why_stopped = str(trial.get("why_stopped", "") or "")
-    brief_summary = str(trial.get("brief_summary", "") or "")
-    primary_outcome = str(trial.get("primary_outcome", "") or "")
     canonical_drug = str(trial.get("canonical_drug", "") or "").lower()
     disease = str(trial.get("disease", "") or "").lower()
     modality = str(trial.get("modality", "") or "").lower()
     target = str(trial.get("primary_target", "UNKNOWN"))
 
-    combined_text = " ".join([why_stopped, brief_summary, primary_outcome])
-    text_signal = _text_signal(combined_text)
-    has_results = _has_results_posted(trial)
+    # v9: post-hoc text signal ONLY — why_stopped, never brief_summary or
+    # primary_outcome (both are written before the trial's outcome exists).
+    why_signal = _text_signal(why_stopped)
     approved_here = _approved_in_indication(canonical_drug, disease)
-    is_unmapped = canonical_drug in ("unmapped", "", "unknown")
     is_io_trial = target in IO_TARGETS or modality in ("antibody",) and target in {"PDCD1", "CD274", "CTLA4"}
 
     # Structured results (most reliable source)
@@ -81,44 +92,48 @@ def assign_labels_v8(trial, structured_results: dict, publication: dict,
         strict = 1 if pub_met else 0
         prov = f"publication_{pub_signal}"
 
-    # Priority 3: trial record text
+    # Priority 3: why_stopped text / regulatory approval (v9: post-hoc only —
+    # no structured p-value and no linked publication were found, and the
+    # ONLY remaining evidence this trial can offer is what happened after it
+    # ended, i.e. why_stopped, or whether the drug is now approved here).
     elif status == "COMPLETED":
-        if text_signal == "negative":
-            strict = 0; prov = "completed+negative_text"
-        elif text_signal == "positive" and has_results:
-            strict = 1; prov = "completed+positive_text+results"
-        elif text_signal == "positive" and approved_here:
-            strict = 1; prov = "completed+positive_text+approved"
-        elif has_results and not is_unmapped and text_signal != "positive":
-            # v8 FIX: distinguish completed+no_results from completed+negative_results
-            strict = 0; prov = "completed+results+no_positive_signal"
-        elif status == "COMPLETED" and not has_results and not is_unmapped:
-            # Completed but never posted results — weaker negative signal
-            strict = -1; prov = "completed+no_results_posted"
+        if approved_here:
+            strict = 1; prov = "completed+approved_indication"
+        elif why_signal == "negative":
+            strict = 0; prov = "completed+why_stopped_negative"
         else:
-            strict = -1; prov = "completed+indeterminate"
+            # Posted results with no post-hoc text and no approval record —
+            # genuinely unknown from this dataset. Do not guess from
+            # brief_summary/primary_outcome (see module docstring).
+            strict = -1; prov = "completed+unknown"
 
     elif status == "TERMINATED":
-        if _termination_is_efficacy(why_stopped):
-            strict = 0; prov = "terminated+efficacy"
-        elif text_signal == "negative":
+        is_efficacy_stop = _termination_is_efficacy(why_stopped)
+        is_success_stop = _termination_is_success(why_stopped)
+        if is_success_stop and not is_efficacy_stop:
+            strict = 1; prov = "terminated+early_success"
+        elif is_efficacy_stop:
+            strict = 0; prov = "terminated+efficacy_failure"
+        elif why_signal == "negative":
             strict = 0; prov = "terminated+negative_text"
         else:
             strict = -1; prov = "terminated+indeterminate"
 
     elif status == "WITHDRAWN":
-        if text_signal == "negative":
+        if why_signal == "negative":
             strict = 0; prov = "withdrawn+negative"
         else:
-            strict = -1; prov = "withdrawn"
+            strict = -1; prov = "withdrawn+indeterminate"
 
     else:
         strict = -1; prov = "other+indeterminate"
 
-    # Permissive: add approved indication as positive
+    # v9: permissive == strict. approved_here is now checked as priority 3's
+    # first COMPLETED rule (above), so by the time strict is -1 for a
+    # COMPLETED trial, approved_here is already known False — there is
+    # nothing left for a separate "permissive" pass to add without
+    # reintroducing pre-trial text as evidence.
     permissive = strict
-    if permissive == -1 and status == "COMPLETED" and approved_here:
-        permissive = 1; prov = "completed+approved_indication"
 
     # Continuous outcome score (for regression model)
     # Use effect size where available, otherwise binary

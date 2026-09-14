@@ -57,7 +57,9 @@ More details are in `docs/deep_learning_branch.md`.
 
 | File | Description |
 |------|-------------|
-| `data/classification_matrix.csv` | Main file: 3000+ trials × 72 columns (features + labels) |
+| `data/classification_matrix.csv` | Main file: 638 labelled trials × 92 columns (features + labels) |
+| `reports/label_audit.csv` | Label audit findings (`audit_labels.py`) |
+| `reports/evaluation_original.csv` | Uncertainty-aware evaluation (`evaluate_original.py`) |
 | `data/classification_matrix.parquet` | Same in Parquet format |
 | `data/data_dictionary.csv` | Description of every column |
 | `reports/model_comparison.csv` | All model metrics (ROC AUC, PR AUC, F1, Brier, etc.) |
@@ -81,6 +83,8 @@ features.py            - Raw feature computation + composite scores
 modeling.py            - Model training, evaluation, calibration
 counterfactual.py      - Counterfactual analysis module
 reporting.py           - Reports, sensitivity analysis, cross-validation
+audit_labels.py        - Adversarial audit of the outcome labels
+evaluate_original.py   - Honest evaluation: null baselines, grouped splits, CIs
 run_pipeline.py        - Main pipeline runner
 run_deep_experiments.py - Optional standalone deep-learning runner
 requirements.txt       - Python dependencies
@@ -98,15 +102,45 @@ Each trained across 3 feature sets (raw, composite, hybrid) × 3 label definitio
 
 ## Label Definitions
 
-- **Strict (~9%)**: Only clearly positive results
-- **Balanced (~33%)**: Positive results + strong biology completions
-- **Permissive (~74%)**: Any completion or continuation signal
+`labels.py` defines three, but **they currently produce an identical vector** —
+`balanced` is assigned from `strict`, and the `permissive` branch only fires on
+rows that are already determinate. Run `python audit_labels.py` to confirm.
+
+Actual distribution: 638 determinate trials, 19.3% positive.
+
+## Evaluating
+
+```bash
+python audit_labels.py         # is the label trustworthy?
+python evaluate_original.py    # what is the real, uncertainty-aware performance?
+```
+
+Read the audit first. Model numbers are only interpretable once you know what
+the label encodes. Details in `docs/label_audit.md`.
 
 ## Key Results
 
-- Best model: AUC ~0.87 on balanced labels
-- Top features: target-disease association, normal tissue burden, dependency mean
-- Most actionable counterfactual lever: Therapeutic Window Score
+Measured with `evaluate_original.py` (bootstrap CIs, permutation tests, null
+baselines) on the shipped matrix:
+
+| Protocol | Best AUC | 95% CI | Beats null? |
+|---|---|---|---|
+| Temporal split (pipeline default) | 0.538 | 0.43–0.64 | no (perm p≈0.24) |
+| Temporal, unseen (target,disease) only | 0.606 | 0.47–0.74 | no |
+| Grouped 5-fold CV on (target,disease) | 0.612 | 0.55–0.68 | yes (perm p=0.002) |
+| Stratified CV (optimistic upper bound) | 0.640 | 0.59–0.69 | yes |
+
+- Strongest null baseline (feature-availability count, no biology): AUC 0.513.
+- Raw brief-summary character count predicts the label at AUC 0.638 — higher
+  than the model achieves on the temporal split.
+- The signal that survives grouping is **genomic** (COSMIC / DepMap / GWAS /
+  somatic), not literature: literature-only features give AUC 0.535 (p=0.15,
+  not significant) under grouped CV.
+
+An earlier version of this README claimed "AUC ~0.87 on balanced labels" and
+"27+ model configurations". Neither is supported: `reports/model_comparison.csv`
+tops out at 0.633, and its 45 rows contain 9 distinct results (the three label
+columns are identical, and `hybrid` duplicates `composite`).
 
 ## Notes
 
