@@ -15,6 +15,7 @@ v6 FIXES:
 """
 
 import json
+import os
 import time
 import hashlib
 import requests
@@ -76,7 +77,18 @@ def cached_get(url: str, params: dict = None, tag: str = None,
             log.warning(f"Timeout attempt {attempt+1}/{retries}: {url}")
             time.sleep(2 ** attempt)
         except requests.exceptions.HTTPError as e:
-            log.warning(f"HTTP {e.response.status_code} for {url}")
+            code = e.response.status_code
+            # 429/5xx are transient. The previous code returned None on every
+            # HTTPError, so NCBI rate-limiting silently zeroed out PubMed
+            # features instead of retrying — a large share of the missing
+            # literature counts in the shipped matrix came from this.
+            if code == 429 or code >= 500:
+                wait = float(e.response.headers.get("Retry-After", 2 ** attempt))
+                log.warning(f"HTTP {code} for {url} — retry in {wait:.0f}s "
+                            f"({attempt+1}/{retries})")
+                time.sleep(min(wait, 30))
+                continue
+            log.warning(f"HTTP {code} for {url}")
             return None
         except KeyboardInterrupt:
             raise  # always propagate Ctrl+C
@@ -722,35 +734,288 @@ def get_cosmic_scores(targets: list[str]) -> dict[str, dict]:
     return results
 
 # ── cBioPortal (pair-level: cancer-type specific alteration frequencies) ──────
+#
+# REPAIRED. The previous implementation returned has_real_cbio_data=False for
+# every pair (0/638 in the shipped matrix) because of two dead endpoints:
+#   1. GET /studies?cancerTypeId=<x>  — cBioPortal does not filter studies by
+#      cancer type on this route. It ignores the parameter and, combined with
+#      the ID projection, returned [] so the function bailed out immediately.
+#   2. GET /genes/<symbol>/mutations  — 404, this route does not exist.
+# The three "real data" values it would otherwise have written were also
+# hardcoded constants (lineage_specificity=0.6, co_alteration_burden=0.4,
+# genomic_complexity=0.5), so even a successful call carried no information.
+#
+# The working pattern, verified against the live API:
+#   GET  /genes/{symbol}                          → entrezGeneId
+#   GET  /studies?projection=SUMMARY              → all studies (filter locally)
+#   GET  /studies/{id}/molecular-profiles         → mutation + GISTIC CNA profiles
+#   GET  /sample-lists/{id}_sequenced             → denominator (sampleCount)
+#   POST /mutations/fetch                         → mutated samples for the gene
+#   POST /molecular-profiles/{gistic}/discrete-copy-number/fetch → AMP/HOMDEL
+#   GET  /studies/{id}/clinical-data?attributeId= → FRACTION_GENOME_ALTERED etc.
 
 CBIO_API = "https://www.cbioportal.org/api"
 
-# Map our disease names to cBioPortal cancer type IDs
-DISEASE_CANCER_TYPE_MAP = {
-    "breast cancer":         "breast",
-    "nsclc":                 "non_small_cell_lung",
-    "lung cancer":           "lung",
-    "colorectal cancer":     "colorectal",
-    "prostate cancer":       "prostate",
-    "melanoma":              "melanoma",
-    "ovarian cancer":        "ovarian",
-    "pancreatic cancer":     "pancreatic",
-    "leukemia":              "leukemia",
-    "lymphoma":              "lymphoma",
-    "hepatocellular carcinoma": "hepatocellular",
-    "hnscc":                 "head_neck",
-    "bladder cancer":        "bladder",
-    "gastric cancer":        "gastric",
-    "renal cell carcinoma":  "renal_cell",
-    "multiple myeloma":      "multiple_myeloma",
-    "glioblastoma":          "glioblastoma",
+# Preferred cohort per disease: the TCGA PanCancer Atlas study for that lineage.
+# All 32 are processed through one uniform pipeline, so alteration frequencies
+# are comparable across lineages — which is what lineage_specificity needs.
+DISEASE_TCGA_STUDY = {
+    "breast cancer":            "brca_tcga_pan_can_atlas_2018",
+    "nsclc":                    "luad_tcga_pan_can_atlas_2018",
+    "lung cancer":              "luad_tcga_pan_can_atlas_2018",
+    "colorectal cancer":        "coadread_tcga_pan_can_atlas_2018",
+    "prostate cancer":          "prad_tcga_pan_can_atlas_2018",
+    "melanoma":                 "skcm_tcga_pan_can_atlas_2018",
+    "ovarian cancer":           "ov_tcga_pan_can_atlas_2018",
+    "pancreatic cancer":        "paad_tcga_pan_can_atlas_2018",
+    "hepatocellular carcinoma": "lihc_tcga_pan_can_atlas_2018",
+    "hnscc":                    "hnsc_tcga_pan_can_atlas_2018",
+    "bladder cancer":           "blca_tcga_pan_can_atlas_2018",
+    "gastric cancer":           "stad_tcga_pan_can_atlas_2018",
+    "renal cell carcinoma":     "kirc_tcga_pan_can_atlas_2018",
+    "glioblastoma":             "gbm_tcga_pan_can_atlas_2018",
+    "endometrial cancer":       "ucec_tcga_pan_can_atlas_2018",
+    "cervical cancer":          "cesc_tcga_pan_can_atlas_2018",
+    "thyroid cancer":           "thca_tcga_pan_can_atlas_2018",
 }
 
-def query_cbio_pair(symbol: str, disease: str) -> dict:
-    """Query cBioPortal for alteration frequency of a gene in a SPECIFIC cancer type."""
-    cancer_type = DISEASE_CANCER_TYPE_MAP.get(disease.lower(), "")
-    tag = f"cbio_pair_{symbol}_{disease.lower().replace(' ', '_')}"
+# Haematological malignancies are barely covered by TCGA, so for those we search
+# the whole study list by OncoTree subtree and take the largest sequenced cohort.
+DISEASE_ONCOTREE_ROOTS = {
+    "leukemia":        ["myeloid", "cllsll", "bll", "tll", "leuk"],
+    "lymphoma":        ["lymph"],
+    "multiple myeloma": ["mm", "myeloma"],
+}
 
+# Reference panel for lineage specificity: one cohort per major lineage.
+CBIO_REFERENCE_STUDIES = [
+    "brca_tcga_pan_can_atlas_2018", "luad_tcga_pan_can_atlas_2018",
+    "coadread_tcga_pan_can_atlas_2018", "prad_tcga_pan_can_atlas_2018",
+    "skcm_tcga_pan_can_atlas_2018", "ov_tcga_pan_can_atlas_2018",
+    "paad_tcga_pan_can_atlas_2018", "lihc_tcga_pan_can_atlas_2018",
+    "hnsc_tcga_pan_can_atlas_2018", "blca_tcga_pan_can_atlas_2018",
+    "stad_tcga_pan_can_atlas_2018", "kirc_tcga_pan_can_atlas_2018",
+    "gbm_tcga_pan_can_atlas_2018", "ucec_tcga_pan_can_atlas_2018",
+    "laml_tcga_pan_can_atlas_2018", "dlbc_tcga_pan_can_atlas_2018",
+]
+
+_CBIO_STUDIES = None
+_CBIO_TYPE_PARENT = None
+_CBIO_ENTREZ: dict[str, int | None] = {}
+_CBIO_PROFILES: dict[str, list] = {}
+
+
+def _cbio_studies() -> list[dict]:
+    """All public cBioPortal studies, fetched once and filtered locally."""
+    global _CBIO_STUDIES
+    if _CBIO_STUDIES is None:
+        data = cached_get(f"{CBIO_API}/studies", params={"projection": "SUMMARY"},
+                          tag="cbio_all_studies")
+        _CBIO_STUDIES = data if isinstance(data, list) else []
+    return _CBIO_STUDIES
+
+
+def _cbio_descendant_types(roots: list[str]) -> set[str]:
+    """Expand OncoTree node ids to themselves plus every descendant."""
+    global _CBIO_TYPE_PARENT
+    if _CBIO_TYPE_PARENT is None:
+        data = cached_get(f"{CBIO_API}/cancer-types", params={"pageSize": 10000},
+                          tag="cbio_cancer_types")
+        _CBIO_TYPE_PARENT = {c["cancerTypeId"]: c.get("parent")
+                             for c in data} if isinstance(data, list) else {}
+    children: dict[str, list[str]] = {}
+    for child, parent in _CBIO_TYPE_PARENT.items():
+        children.setdefault(parent, []).append(child)
+    out, stack = set(), list(roots)
+    while stack:
+        node = stack.pop()
+        if node in out:
+            continue
+        out.add(node)
+        stack.extend(children.get(node, []))
+    return out
+
+
+def _cbio_study_for_disease(disease: str) -> str | None:
+    """Pick the cohort to characterise this disease with."""
+    key = disease.lower().strip()
+    if key in DISEASE_TCGA_STUDY:
+        return DISEASE_TCGA_STUDY[key]
+    roots = DISEASE_ONCOTREE_ROOTS.get(key)
+    if not roots:
+        return None  # "cancer nos", "solid tumors" — no single lineage
+    wanted = _cbio_descendant_types(roots)
+    candidates = [s for s in _cbio_studies()
+                  if s.get("cancerTypeId") in wanted and s.get("allSampleCount", 0) >= 50]
+    if not candidates:
+        return None
+    candidates.sort(key=lambda s: s.get("allSampleCount", 0), reverse=True)
+    return candidates[0]["studyId"]
+
+
+def _cbio_entrez_id(symbol: str) -> int | None:
+    if symbol in _CBIO_ENTREZ:
+        return _CBIO_ENTREZ[symbol]
+    data = cached_get(f"{CBIO_API}/genes/{symbol}", tag=f"cbio_gene_{symbol}")
+    gid = data.get("entrezGeneId") if isinstance(data, dict) else None
+    _CBIO_ENTREZ[symbol] = gid
+    return gid
+
+
+def _cbio_profiles(study_id: str) -> list[dict]:
+    if study_id not in _CBIO_PROFILES:
+        data = cached_get(f"{CBIO_API}/studies/{study_id}/molecular-profiles",
+                          tag=f"cbio_profiles_{study_id}")
+        _CBIO_PROFILES[study_id] = data if isinstance(data, list) else []
+    return _CBIO_PROFILES[study_id]
+
+
+def _cbio_sample_count(sample_list_id: str) -> int:
+    data = cached_get(f"{CBIO_API}/sample-lists/{sample_list_id}",
+                      tag=f"cbio_samplelist_{sample_list_id}")
+    if isinstance(data, dict):
+        return int(data.get("sampleCount", 0) or 0)
+    return 0
+
+
+def _cbio_altered_samples(study_id: str, entrez_id: int) -> tuple[set[str], int]:
+    """
+    Samples carrying a mutation or a high-level CNA (AMP / HOMDEL) in the gene.
+    Returns (altered sample ids, denominator = profiled sample count).
+    """
+    profiles = _cbio_profiles(study_id)
+    mut_profile = next((p["molecularProfileId"] for p in profiles
+                        if p.get("molecularAlterationType") == "MUTATION_EXTENDED"), None)
+    gistic_profile = next((p["molecularProfileId"] for p in profiles
+                           if p.get("molecularAlterationType") == "COPY_NUMBER_ALTERATION"
+                           and p.get("datatype") == "DISCRETE"), None)
+
+    altered: set[str] = set()
+    denominators: list[int] = []
+
+    if mut_profile:
+        muts = cached_post(
+            f"{CBIO_API}/mutations/fetch?projection=ID",
+            payload={"molecularProfileIds": [mut_profile], "entrezGeneIds": [entrez_id]},
+            tag=f"cbio_mut_{study_id}_{entrez_id}",
+        )
+        if isinstance(muts, list):
+            altered |= {m["sampleId"] for m in muts if "sampleId" in m}
+            n = _cbio_sample_count(f"{study_id}_sequenced")
+            if n:
+                denominators.append(n)
+
+    if gistic_profile:
+        cna = cached_post(
+            f"{CBIO_API}/molecular-profiles/{gistic_profile}/discrete-copy-number/fetch"
+            f"?discreteCopyNumberEventType=ALL&projection=ID",
+            payload={"sampleListId": f"{study_id}_cna", "entrezGeneIds": [entrez_id]},
+            tag=f"cbio_cna_{study_id}_{entrez_id}",
+        )
+        if isinstance(cna, list):
+            # alteration codes: 2 = amplification, -2 = deep deletion
+            altered |= {c["sampleId"] for c in cna
+                        if c.get("alteration") in (2, -2) and "sampleId" in c}
+            n = _cbio_sample_count(f"{study_id}_cna")
+            if n:
+                denominators.append(n)
+
+    return altered, (max(denominators) if denominators else 0)
+
+
+def _cbio_alteration_frequency(study_id: str, entrez_id: int) -> float | None:
+    altered, denom = _cbio_altered_samples(study_id, entrez_id)
+    if denom <= 0:
+        return None
+    return len(altered) / denom
+
+
+def _cbio_cohort_stat(study_id: str, attribute_id: str) -> float | None:
+    """Mean of a numeric sample-level clinical attribute across the cohort."""
+    data = cached_get(
+        f"{CBIO_API}/studies/{study_id}/clinical-data",
+        params={"clinicalDataType": "SAMPLE", "attributeId": attribute_id,
+                "projection": "SUMMARY", "pageSize": 10000},
+        tag=f"cbio_clin_{study_id}_{attribute_id}",
+    )
+    if not isinstance(data, list):
+        return None
+    values = []
+    for row in data:
+        try:
+            values.append(float(row["value"]))
+        except (KeyError, TypeError, ValueError):
+            continue
+    return float(np.mean(values)) if values else None
+
+
+def _cbio_co_alteration_burden(study_id: str, entrez_id: int) -> float | None:
+    """
+    Mean mutation count of the samples that carry an alteration in this gene,
+    expressed relative to the cohort mean. >0.5 means the gene tends to occur in
+    genomically noisy tumours (a real signal about how clean the target is).
+    """
+    altered, _ = _cbio_altered_samples(study_id, entrez_id)
+    if not altered:
+        return None
+    data = cached_get(
+        f"{CBIO_API}/studies/{study_id}/clinical-data",
+        params={"clinicalDataType": "SAMPLE", "attributeId": "MUTATION_COUNT",
+                "projection": "SUMMARY", "pageSize": 10000},
+        tag=f"cbio_clin_{study_id}_MUTATION_COUNT",
+    )
+    if not isinstance(data, list) or not data:
+        return None
+    per_sample = {}
+    for row in data:
+        try:
+            per_sample[row["sampleId"]] = float(row["value"])
+        except (KeyError, TypeError, ValueError):
+            continue
+    if not per_sample:
+        return None
+    in_altered = [v for s, v in per_sample.items() if s in altered]
+    if not in_altered:
+        return None
+    cohort_mean = float(np.mean(list(per_sample.values())))
+    if cohort_mean <= 0:
+        return None
+    ratio = float(np.mean(in_altered)) / cohort_mean
+    return float(min(ratio / 2.0, 1.0))  # 0.5 == cohort average burden
+
+
+def _cbio_lineage_specificity(entrez_id: int, study_id: str,
+                              freq_here: float) -> float | None:
+    """
+    How concentrated the gene's alteration is in this lineage relative to a
+    16-cohort reference panel. 0.5 = no lineage preference, →1 = specific.
+    Replaces the previous hardcoded 0.6.
+    """
+    others = []
+    for ref in CBIO_REFERENCE_STUDIES:
+        if ref == study_id:
+            continue
+        f = _cbio_alteration_frequency(ref, entrez_id)
+        if f is not None:
+            others.append(f)
+    if len(others) < 5:
+        return None
+    background = float(np.mean(others))
+    if freq_here + background <= 0:
+        return 0.5
+    return float(freq_here / (freq_here + background))
+
+
+def query_cbio_pair(symbol: str, disease: str) -> dict:
+    """
+    Real cancer-type-specific genomic context for a (gene, disease) pair.
+
+    alteration_frequency  fraction of profiled tumours in the matching cohort
+                          with a mutation or high-level CNA in the gene
+    lineage_specificity   that frequency against a 16-lineage reference panel
+    co_alteration_burden  mutational load of altered samples vs cohort mean
+    genomic_complexity    mean fraction of the genome altered in the cohort
+    """
     result = {
         "alteration_frequency": 0.0,
         "lineage_specificity": 0.0,
@@ -759,117 +1024,217 @@ def query_cbio_pair(symbol: str, disease: str) -> dict:
         "has_real_cbio_data": False,
     }
 
-    if not cancer_type:
+    if not symbol or symbol in ("UNKNOWN", "DNA", ""):
+        return result  # not a gene — chemotherapy pseudo-targets have no cBio entry
+
+    study_id = _cbio_study_for_disease(disease)
+    if not study_id:
         return result
 
-    # Get studies for this cancer type
-    studies_data = cached_get(
-        f"{CBIO_API}/studies",
-        params={"cancerTypeId": cancer_type, "projection": "ID"},
-        tag=f"cbio_studies_{cancer_type}",
-    )
-    if not studies_data or not isinstance(studies_data, list):
+    entrez_id = _cbio_entrez_id(symbol)
+    if not entrez_id:
         return result
 
-    study_ids = [s["studyId"] for s in studies_data[:5] if "studyId" in s]
-    if not study_ids:
+    freq = _cbio_alteration_frequency(study_id, entrez_id)
+    if freq is None:
         return result
 
-    # Get molecular profiles for alteration frequency
-    profiles_data = cached_get(
-        f"{CBIO_API}/molecular-profiles",
-        params={"studyIds": ",".join(study_ids), "projection": "ID"},
-        tag=f"cbio_profiles_{cancer_type}",
-    )
-    if not profiles_data or not isinstance(profiles_data, list):
-        return result
+    result["alteration_frequency"] = float(freq)
+    result["has_real_cbio_data"] = True
+    result["cbio_study_id"] = study_id
 
-    # Use mutation profiles
-    mut_profiles = [p["molecularProfileId"] for p in profiles_data
-                    if p.get("molecularAlterationType") == "MUTATION_EXTENDED"]
-    if not mut_profiles:
-        return result
+    lineage = _cbio_lineage_specificity(entrez_id, study_id, freq)
+    if lineage is not None:
+        result["lineage_specificity"] = lineage
 
-    # Query mutation counts for this gene
-    profile_id = mut_profiles[0]
-    mut_data = cached_get(
-        f"{CBIO_API}/mutations/fetch",
-        tag=f"cbio_mut_{profile_id}_{symbol}",
-    )
-    # Use a simpler endpoint for gene alteration frequency
-    alt_data = cached_get(
-        f"{CBIO_API}/genes/{symbol}/mutations",
-        tag=f"cbio_gene_mut_{symbol}_{cancer_type}",
-    )
+    burden = _cbio_co_alteration_burden(study_id, entrez_id)
+    if burden is not None:
+        result["co_alteration_burden"] = burden
 
-    # Fallback: get from cancer type summary
-    summary_data = cached_get(
-        f"{CBIO_API}/cancer-types/{cancer_type}",
-        tag=f"cbio_cancer_type_{cancer_type}",
-    )
-
-    # Use available data to estimate alteration frequency
-    if alt_data and isinstance(alt_data, list) and len(alt_data) > 0:
-        result["alteration_frequency"] = min(len(alt_data) / 200.0, 1.0)
-        result["has_real_cbio_data"] = True
-        result["lineage_specificity"] = 0.6
-        result["co_alteration_burden"] = 0.4
-        result["genomic_complexity"] = 0.5
+    fga = _cbio_cohort_stat(study_id, "FRACTION_GENOME_ALTERED")
+    if fga is not None:
+        result["genomic_complexity"] = float(min(fga, 1.0))
 
     return result
 
 # ── PubMed (pair-level) ───────────────────────────────────────────────────────
+#
+# REPAIRED. Three defects in the previous implementation:
+#   1. SATURATION. pubmed_pair_count = min(count/1000, 1.0) pinned every
+#      well-studied pair to exactly 1.0 (EGFR+NSCLC has ~16,000 papers), and
+#      clinical_trial_pub_count = min(count/100, 1.0) collapsed 638 trials onto
+#      41 distinct values. Counts are now log-scaled, which keeps the ordering.
+#   2. TEMPORAL LEAKAGE. Counts were taken as of today for trials that started
+#      before 2015, so the literature being counted includes papers reporting
+#      the outcome of the very trial being predicted — and of its Phase 3
+#      follow-ups. ~80% of the EGFR+NSCLC corpus postdates 2014. Every query is
+#      now capped at `as_of_year`, which the caller sets to the trial's start
+#      year, so a feature can only see literature that existed at trial start.
+#   3. NAIVE QUERY TERMS. "nsclc[Title/Abstract]" misses "non-small cell lung
+#      carcinoma"; disease names were also passed unquoted so multi-word terms
+#      were parsed as separate tokens. Diseases now expand to a MeSH term plus
+#      quoted synonyms.
 
-def query_pubmed_pair(symbol: str, disease: str) -> dict:
-    """Query PubMed for publications on a specific target-disease pair."""
-    query = f"{symbol}[Title/Abstract] AND {disease}[Title/Abstract]"
-    tag = f"pubmed_pair_{symbol}_{disease.lower().replace(' ', '_')}"
+PUBMED_EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 
+# Optional. With a key NCBI allows 10 req/s instead of 3, which matters because
+# the date-bounded queries triple the number of calls on a cold cache.
+PUBMED_API_KEY = os.getenv("NCBI_API_KEY", "")
+
+# Scale constants for _log_scale. Chosen so the busiest pair in this corpus
+# (ERBB2 + breast cancer, ~45k papers) lands just under 1.0 and the whole range
+# stays separable, instead of the old linear /1000 cap that pinned every
+# well-studied pair to exactly 1.0.
+PUBMED_SATURATION = 50000
+PUBMED_CT_SATURATION = 3000
+
+# MeSH heading + free-text synonyms per disease.
+DISEASE_PUBMED_TERMS = {
+    "breast cancer":            ['"Breast Neoplasms"[MeSH]', '"breast cancer"', '"breast carcinoma"'],
+    "nsclc":                    ['"Carcinoma, Non-Small-Cell Lung"[MeSH]', 'NSCLC', '"non-small cell lung"'],
+    "lung cancer":              ['"Lung Neoplasms"[MeSH]', '"lung cancer"'],
+    "colorectal cancer":        ['"Colorectal Neoplasms"[MeSH]', '"colorectal cancer"', '"colon cancer"'],
+    "prostate cancer":          ['"Prostatic Neoplasms"[MeSH]', '"prostate cancer"'],
+    "melanoma":                 ['"Melanoma"[MeSH]', 'melanoma'],
+    "ovarian cancer":           ['"Ovarian Neoplasms"[MeSH]', '"ovarian cancer"'],
+    "pancreatic cancer":        ['"Pancreatic Neoplasms"[MeSH]', '"pancreatic cancer"'],
+    "leukemia":                 ['"Leukemia"[MeSH]', 'leukemia', 'leukaemia'],
+    "lymphoma":                 ['"Lymphoma"[MeSH]', 'lymphoma'],
+    "hepatocellular carcinoma": ['"Carcinoma, Hepatocellular"[MeSH]', '"hepatocellular carcinoma"', 'HCC'],
+    "hnscc":                    ['"Squamous Cell Carcinoma of Head and Neck"[MeSH]', 'HNSCC', '"head and neck"'],
+    "bladder cancer":           ['"Urinary Bladder Neoplasms"[MeSH]', '"bladder cancer"', '"urothelial carcinoma"'],
+    "gastric cancer":           ['"Stomach Neoplasms"[MeSH]', '"gastric cancer"'],
+    "renal cell carcinoma":     ['"Carcinoma, Renal Cell"[MeSH]', '"renal cell carcinoma"', 'RCC'],
+    "multiple myeloma":         ['"Multiple Myeloma"[MeSH]', '"multiple myeloma"'],
+    "glioblastoma":             ['"Glioblastoma"[MeSH]', 'glioblastoma'],
+    "endometrial cancer":       ['"Endometrial Neoplasms"[MeSH]', '"endometrial cancer"'],
+    "cervical cancer":          ['"Uterine Cervical Neoplasms"[MeSH]', '"cervical cancer"'],
+    "thyroid cancer":           ['"Thyroid Neoplasms"[MeSH]', '"thyroid cancer"'],
+    "solid tumors":             ['"Neoplasms"[MeSH]'],
+    "cancer nos":               ['"Neoplasms"[MeSH]'],
+}
+
+
+# Literature aliases. The clinical literature overwhelmingly uses the protein
+# name, not the HGNC symbol: searching "MS4A1" finds 30 lymphoma papers while
+# "CD20" finds thousands. Without these the publication features understate
+# evidence for exactly the well-validated targets they are meant to reward.
+GENE_PUBMED_ALIASES = {
+    "MS4A1":  ["CD20"],
+    "PDCD1":  ["PD-1", "PD1"],
+    "CD274":  ["PD-L1", "PDL1"],
+    "CTLA4":  ["CTLA-4"],
+    "ERBB2":  ["HER2", "HER-2", "neu"],
+    "EGFR":   ["HER1", "ErbB1"],
+    "VEGFR2": ["KDR", "VEGFR-2"],
+    "VEGFA":  ["VEGF", "VEGF-A"],
+    "TUBB":   ["tubulin"],
+    "PSMB5":  ["proteasome"],
+    "CRBN":   ["cereblon"],
+    "TNFRSF8": ["CD30"],
+    "TACSTD2": ["Trop-2", "TROP2"],
+    "NECTIN4": ["Nectin-4"],
+    "ABL1":   ["BCR-ABL", "BCR::ABL"],
+    "MTOR":   ["mTOR"],
+    "AR":     ["androgen receptor"],
+    "ESR1":   ["estrogen receptor"],
+    "RRM1":   ["ribonucleotide reductase"],
+    "TOP1":   ["topoisomerase I"],
+    "TOP2A":  ["topoisomerase II"],
+}
+
+
+def _pubmed_gene_clause(symbol: str) -> str:
+    terms = [symbol] + GENE_PUBMED_ALIASES.get(symbol.upper(), [])
+    return "(" + " OR ".join(
+        f'"{t}"[Title/Abstract]' if " " in t or "-" in t else f"{t}[Title/Abstract]"
+        for t in terms
+    ) + ")"
+
+
+def _pubmed_disease_clause(disease: str) -> str:
+    terms = DISEASE_PUBMED_TERMS.get(disease.lower().strip())
+    if not terms:
+        terms = [f'"{disease}"']
+    return "(" + " OR ".join(
+        t if "[" in t else f"{t}[Title/Abstract]" for t in terms
+    ) + ")"
+
+
+def _pubmed_count(term: str, tag: str) -> int | None:
+    """esearch hit count, or None if the query failed."""
+    params = {"db": "pubmed", "term": term, "rettype": "count",
+              "retmode": "json", "tool": "mech_engine"}
+    if PUBMED_API_KEY:
+        params["api_key"] = PUBMED_API_KEY
+    data = cached_get(PUBMED_EUTILS, params=params, tag=tag)
+    if not isinstance(data, dict):
+        return None
+    try:
+        return int(data.get("esearchresult", {}).get("count", 0))
+    except (TypeError, ValueError):
+        return None
+
+
+def _log_scale(count: int, saturation: float) -> float:
+    """log1p(count)/log1p(saturation), clipped to [0, 1] — no hard ceiling."""
+    if count <= 0:
+        return 0.0
+    return float(min(np.log1p(count) / np.log1p(saturation), 1.0))
+
+
+def query_pubmed_pair(symbol: str, disease: str, as_of_year: int | None = None) -> dict:
+    """
+    Literature evidence for a target-disease pair, as it stood at `as_of_year`.
+
+    Pass the trial's start year as `as_of_year`. Leaving it None reproduces the
+    old leaky behaviour (all literature up to today) and should only be used for
+    scoring prospective assets, never for training or backtesting.
+    """
     result = {
-        "pubmed_pair_count": 0,
-        "clinical_trial_pub_count": 0,
-        "pair_pub_acceleration": 0,
+        "pubmed_pair_count": 0.0,
+        "clinical_trial_pub_count": 0.0,
+        "pair_pub_acceleration": 0.0,
         "has_real_pubmed_data": False,
+        "pubmed_as_of_year": as_of_year,
     }
+    if not symbol or symbol in ("UNKNOWN", ""):
+        return result
 
-    # Search count
-    count_data = cached_get(
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
-        params={"db": "pubmed", "term": query, "rettype": "count",
-                "retmode": "json", "tool": "mech_engine"},
-        tag=tag + "_count",
-    )
-    if count_data:
-        count = int(count_data.get("esearchresult", {}).get("count", 0))
-        result["pubmed_pair_count"] = min(count / 1000.0, 1.0)
-        result["has_real_pubmed_data"] = True
+    base = f"{_pubmed_gene_clause(symbol)} AND {_pubmed_disease_clause(disease)}"
+    slug = f"{symbol}_{disease.lower().replace(' ', '_')}"
 
-    # Clinical trial papers
-    ct_query = f"{symbol}[Title/Abstract] AND {disease}[Title/Abstract] AND clinical trial[pt]"
-    ct_data = cached_get(
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
-        params={"db": "pubmed", "term": ct_query, "rettype": "count",
-                "retmode": "json", "tool": "mech_engine"},
-        tag=tag + "_ct_count",
-    )
-    if ct_data:
-        ct_count = int(ct_data.get("esearchresult", {}).get("count", 0))
-        result["clinical_trial_pub_count"] = min(ct_count / 100.0, 1.0)
+    if as_of_year:
+        window = f' AND 1900:{as_of_year}[dp]'
+        slug += f"_asof{as_of_year}"
+    else:
+        window = ""
 
-    # Recent papers (acceleration signal)
-    recent_query = query + " AND 2021:2024[pdat]"
-    recent_data = cached_get(
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
-        params={"db": "pubmed", "term": recent_query, "rettype": "count",
-                "retmode": "json", "tool": "mech_engine"},
-        tag=tag + "_recent",
-    )
-    if recent_data and result["pubmed_pair_count"] > 0:
-        recent_count = int(recent_data.get("esearchresult", {}).get("count", 0))
-        pair_total = count if count_data else 1
-        result["pair_pub_acceleration"] = min(recent_count / max(pair_total * 0.4, 1), 1.0)
+    total = _pubmed_count(base + window, f"pubmed_pair_{slug}_count")
+    if total is None:
+        return result
+    result["pubmed_pair_count"] = _log_scale(total, PUBMED_SATURATION)
+    result["has_real_pubmed_data"] = True
+    result["pubmed_pair_count_raw"] = total
 
-    time.sleep(0.4)  # NCBI rate limit: max 3 req/sec without API key
+    ct = _pubmed_count(f"{base} AND clinical trial[pt]{window}",
+                       f"pubmed_pair_{slug}_ct_count")
+    if ct is not None:
+        result["clinical_trial_pub_count"] = _log_scale(ct, PUBMED_CT_SATURATION)
+        result["clinical_trial_pub_count_raw"] = ct
+
+    # Acceleration: share of the corpus published in the 4 years before the
+    # trial started. Previously a hardcoded 2021:2024 window, which for a 2010
+    # trial measured literature published a decade after the fact.
+    if as_of_year and total > 0:
+        recent = _pubmed_count(
+            f"{base} AND {as_of_year - 3}:{as_of_year}[dp]",
+            f"pubmed_pair_{slug}_recent",
+        )
+        if recent is not None:
+            result["pair_pub_acceleration"] = float(min(recent / total, 1.0))
+
+    time.sleep(0.11 if PUBMED_API_KEY else 0.35)  # NCBI: 10/s with key, 3/s without
     return result
 
 # ── Master enrichment function ─────────────────────────────────────────────────
@@ -879,7 +1244,11 @@ def enrich_all(pairs: list[tuple], targets: list[str]) -> dict:
     Enrich all target-disease pairs and targets.
     Returns dict with 'pair_data' and 'target_data'.
 
-    pairs: list of (symbol, disease) tuples
+    pairs: list of (symbol, disease) or (symbol, disease, as_of_year) tuples.
+           Prefer the 3-tuple form: the year bounds the PubMed queries to
+           literature that existed when the trial started, which is what stops
+           the publication features leaking the trial's own outcome back into
+           the model. Keys in the returned pair_data mirror the input tuples.
     targets: list of unique target symbols
     """
     print(f"\n  Enriching {len(pairs)} target-disease pairs + {len(targets)} unique targets...")
@@ -947,23 +1316,32 @@ def enrich_all(pairs: list[tuple], targets: list[str]) -> dict:
     # ── Pair-level queries ──
     print(f"\n  Querying Open Targets + PubMed + cBioPortal for {len(pairs)} pairs...")
     pair_data = {}
-    for symbol, disease in tqdm(pairs, desc="OT+PubMed+cBio"):
-        key = (symbol, disease)
+    ot_cache: dict[tuple, dict] = {}
+    cbio_cache: dict[tuple, dict] = {}
 
-        # Open Targets (needs Ensembl ID + EFO ID)
-        ensembl_id = get_ensembl_id(symbol) or ""
-        efo_id = DISEASE_EFO_MAP.get(disease.lower(), "")
-        ot_result = {}
-        if ensembl_id and efo_id:
-            ot_result = query_open_targets_pair(ensembl_id, efo_id, symbol, disease)
+    for entry in tqdm(pairs, desc="OT+PubMed+cBio"):
+        if len(entry) == 3:
+            symbol, disease, as_of_year = entry
+        else:
+            symbol, disease = entry
+            as_of_year = None
+        key = tuple(entry)
+        td = (symbol, disease)
 
-        # PubMed pair-level
-        pm_result = query_pubmed_pair(symbol, disease)
+        # Open Targets and cBioPortal are year-independent, so compute once per
+        # (target, disease) even when several trial years share the pair.
+        if td not in ot_cache:
+            ensembl_id = get_ensembl_id(symbol) or ""
+            efo_id = DISEASE_EFO_MAP.get(disease.lower(), "")
+            ot_cache[td] = (query_open_targets_pair(ensembl_id, efo_id, symbol, disease)
+                            if ensembl_id and efo_id else {})
+        if td not in cbio_cache:
+            cbio_cache[td] = query_cbio_pair(symbol, disease)
 
-        # cBioPortal pair-level (cancer-type specific)
-        cbio_result = query_cbio_pair(symbol, disease)
+        # PubMed is bounded at the trial's start year — this one must be per-year.
+        pm_result = query_pubmed_pair(symbol, disease, as_of_year=as_of_year)
 
-        pair_data[key] = {**ot_result, **pm_result, **cbio_result}
+        pair_data[key] = {**ot_cache[td], **pm_result, **cbio_cache[td]}
 
     ot_hits = sum(1 for v in pair_data.values() if v.get("has_real_ot_data"))
     pm_hits = sum(1 for v in pair_data.values() if v.get("has_real_pubmed_data"))

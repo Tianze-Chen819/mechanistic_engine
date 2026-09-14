@@ -8,6 +8,7 @@ v7 FIXES:
 """
 
 import logging
+import os
 from pathlib import Path
 
 # ── Directories ──────────────────────────────────────────────────────────────
@@ -48,6 +49,21 @@ RANDOM_SEED      = 42
 TEST_YEAR_CUTOFF = 2015
 CV_FOLDS         = 5
 
+# ── Optional deep learning branch ────────────────────────────────────────────
+# Disabled by default. This branch complements the tree baselines; it does not
+# replace RandomForest/LightGBM and it reuses the same temporal split.
+RUN_DEEP_EXPERIMENTS = os.getenv("RUN_DEEP_EXPERIMENTS", "0") == "1"
+DEEP_LABEL_COL = os.getenv("DEEP_LABEL_COL", "label_permissive")
+DEEP_FEATURE_SET = os.getenv("DEEP_FEATURE_SET", "composite")
+
+DEEP_BATCH_SIZE = int(os.getenv("DEEP_BATCH_SIZE", "64"))
+DEEP_EPOCHS = int(os.getenv("DEEP_EPOCHS", "100"))
+DEEP_PATIENCE = int(os.getenv("DEEP_PATIENCE", "15"))
+DEEP_LR = float(os.getenv("DEEP_LR", "0.001"))
+DEEP_WEIGHT_DECAY = float(os.getenv("DEEP_WEIGHT_DECAY", "0.0001"))
+
+USE_PRETRAINED_EMBEDDINGS = os.getenv("USE_PRETRAINED_EMBEDDINGS", "0") == "1"
+
 # ── Label construction ────────────────────────────────────────────────────────
 POSITIVE_TEXT_TRIGGERS = [
     "met primary endpoint", "significant improvement", "overall survival benefit",
@@ -62,9 +78,30 @@ NEGATIVE_TEXT_TRIGGERS = [
     "terminated for efficacy", "negative results", "did not demonstrate",
     "no statistically significant", "not superior",
 ]
+# v9 FIX: the bare substring "efficacy" was removed. It matched successful
+# early-stopping ("stopped early due to overwhelming efficacy") the same as
+# genuine failure ("terminated due to lack of efficacy") — see
+# docs/label_audit.md. Every phrase left here is an explicit statement that
+# the drug did NOT work; a bare "efficacy" mention proves nothing on its own.
 TERMINATED_EFFICACY_REASONS = [
     "futility", "lack of efficacy", "poor efficacy", "no efficacy",
-    "insufficient efficacy", "efficacy", "no response", "lack of response",
+    "insufficient efficacy", "no response", "lack of response",
+    "failed to demonstrate efficacy", "did not demonstrate efficacy",
+    "lack of clinical efficacy", "inadequate efficacy",
+]
+
+# v9 ADDED: the mirror image of the above. "Terminated ... efficacy" is
+# ambiguous by itself — a DSMB can stop a trial early either because the drug
+# is failing OR because interim results are so strong that continuing to dose
+# the control arm becomes unethical. These phrases identify the second case,
+# which is a genuine positive outcome and was previously being scored negative
+# by the bare "efficacy" substring match.
+TERMINATED_SUCCESS_REASONS = [
+    "stopped early due to efficacy", "stopped for efficacy",
+    "early stopping due to efficacy", "efficacy at interim",
+    "efficacy at the interim", "overwhelming efficacy",
+    "met the primary endpoint at interim", "interim analysis showed efficacy",
+    "efficacy established", "demonstrated superior efficacy",
 ]
 LABELABLE_STATUSES = [
     "COMPLETED", "TERMINATED", "WITHDRAWN", "ACTIVE_NOT_RECRUITING",

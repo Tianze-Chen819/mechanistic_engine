@@ -14,12 +14,13 @@ v6 IMPROVEMENTS SUMMARY:
   10. PRISTINE ANALYSIS: explicitly tests whether performance reflects biology vs data richness
 """
 
+import os
 import numpy as np
 import pandas as pd
 from pathlib import Path
 from config import (
     DATA_DIR, REPORT_DIR, FIG_DIR, MODEL_DIR, TEST_YEAR_CUTOFF,
-    RANDOM_SEED, log,
+    RANDOM_SEED, log, RUN_DEEP_EXPERIMENTS, DEEP_FEATURE_SET, DEEP_LABEL_COL,
 )
 
 # ── Step imports ──────────────────────────────────────────────────────────────
@@ -266,11 +267,22 @@ def normalize_trials(df: pd.DataFrame) -> pd.DataFrame:
 
 # ── Dataset split ─────────────────────────────────────────────────────────────
 
-def temporal_split(df: pd.DataFrame, label_col: str = "label_permissive"):
+def temporal_split(df: pd.DataFrame, label_col: str = "label_permissive",
+                   group_purge: bool = True):
     """
     Temporal split: trials starting ≤ cutoff → train, > cutoff → test.
     v7: Uses label_permissive as default for more determinate trials.
     Prints year distribution to verify test set size.
+
+    v9 ADDED `group_purge` (default True): the biology features in this
+    pipeline are a pure function of (primary_target, disease) — they do not
+    vary by trial. A temporal-only split lets a test trial share its entire
+    feature vector with a training trial that has the same (target, disease)
+    pair (an audit of the shipped matrix found 43% of test rows did). That
+    lets a model memorise rather than generalise, and inflates every held-out
+    metric. With group_purge, any test row whose (target, disease) pair also
+    appears in train is dropped — the reported test set only contains biology
+    the model has genuinely not seen. See docs/label_audit.md.
     """
     det = df[df[label_col] != -1].copy()
 
@@ -287,10 +299,21 @@ def temporal_split(df: pd.DataFrame, label_col: str = "label_permissive"):
     train = det[det["start_year"] <= TEST_YEAR_CUTOFF]
     test  = det[det["start_year"] > TEST_YEAR_CUTOFF]
 
+    if group_purge and len(train) and len(test):
+        seen_pairs = set(zip(train["primary_target"], train["disease"]))
+        in_train = test.apply(
+            lambda r: (r["primary_target"], r["disease"]) in seen_pairs, axis=1)
+        n_purged = int(in_train.sum())
+        if n_purged:
+            print(f"  Group purge: removing {n_purged}/{len(test)} test rows "
+                  f"whose (target, disease) pair also appears in train")
+            test = test[~in_train]
+
     print(f"\n  TEMPORAL SPLIT: train ≤{TEST_YEAR_CUTOFF} ({len(train)}), "
           f"test >{TEST_YEAR_CUTOFF} ({len(test)})")
     print(f"    Train pos rate: {(train[label_col] == 1).mean():.3f}")
-    print(f"    Test pos rate:  {(test[label_col] == 1).mean():.3f}")
+    if len(test):
+        print(f"    Test pos rate:  {(test[label_col] == 1).mean():.3f}")
 
     if len(test) < 80:
         print(f"  ⚠ Test set small ({len(test)} trials). "
@@ -420,21 +443,15 @@ def main():
     # ── STEP 4: Circularity-free labels ──────────────────────────────────────
     print("\n[STEP 4] Building labels (circularity-free — no biology used)...")
     df = build_labels(df)
-    # v8: set USE_V8_LABELS=True to enrich labels with CT.gov results + PubMed
-    # Adds ~30 min first run (cached after). Default False for speed.
-    #TODO: Can we use V8 as default or at least compare it with V8 = TRUE?
-    USE_V8_LABELS = False
-    if USE_V8_LABELS:
-        try:
-            from labels_v8 import build_labels_v8
-            print("  Enriching labels with structured results + publications...")
-            df = build_labels_v8(df, fetch_live=True)
-        except Exception as e:
-            log.warning(f"v8 label enrichment failed: {e}")
-    # v8: optionally enrich labels with structured results + publications
-    # Set USE_V8_LABELS = True to fetch from ClinicalTrials.gov and PubMed
-    # This adds ~30 min on first run but is cached after
-    USE_V8_LABELS = False
+    # v9: v8's structured-results + publication enrichment is now the default.
+    # It resolves many of the trials labels.py alone leaves indeterminate
+    # (the "completed+unknown" bucket) using real post-hoc evidence — a
+    # p-value from the trial's own posted results, or its linked publication —
+    # instead of the pre-trial text matching that v9 removed. Set
+    # USE_V8_LABELS=0 to skip it (fast, but leaves that bucket unresolved).
+    # Adds ~15-20 min on a cold cache (2 CT.gov + up to 2 PubMed calls per
+    # trial); fast on re-runs since every call is disk-cached.
+    USE_V8_LABELS = os.getenv("USE_V8_LABELS", "1") == "1"
     if USE_V8_LABELS:
         try:
             from labels_v8 import build_labels_v8
@@ -459,8 +476,13 @@ def main():
 
     mapped = df[df["primary_target"] != "UNKNOWN"]
     targets = sorted(mapped["primary_target"].unique().tolist())
+    # (target, disease, start_year): the year bounds the PubMed queries so a
+    # trial's features only see literature that existed when it started.
     pairs = sorted(set(
-        zip(mapped["primary_target"], mapped["disease"])
+        (t, d, int(y))
+        for t, d, y in zip(mapped["primary_target"], mapped["disease"],
+                           mapped["start_year"].fillna(0))
+        if y and y > 0
     ))
 
     enrichment = enrich_all(pairs, targets)
@@ -470,11 +492,21 @@ def main():
     # ── STEP 6: Features ─────────────────────────────────────────────────────
     print("\n[STEP 6] Computing features (pair-level + missingness indicators)...")
     df = compute_all_features(df, pair_data, target_data)
+    try:
+        from embedding_features import apply_precomputed_cbio_features
+        df = apply_precomputed_cbio_features(df)
+    except Exception as e:
+        log.warning(f"Precomputed cBioPortal merge skipped: {e}")
 
     feature_cols = [c for c in df.columns
                     if c in ALL_RAW_FEATURES
                     or c in ["CDS", "TDS", "BFS", "MCS", "TWS", "EMS", "BIOLOGY_SCORE"]
                     or c.endswith("_missing")]
+    df.to_csv(DATA_DIR / "full_feature_matrix.csv", index=False)
+    try:
+        df.to_parquet(DATA_DIR / "full_feature_matrix.parquet", index=False)
+    except Exception:
+        pass
 
     # ── STEP 7: Modeling dataset ──────────────────────────────────────────────
     print("\n[STEP 7] Building modeling dataset...")
@@ -492,6 +524,23 @@ def main():
     model_output = train_all_models(data)
     trained_models = model_output["trained"]
     best_models = model_output["best"]
+
+    if RUN_DEEP_EXPERIMENTS:
+        print("\n[STEP 8B] Deep learning branch (learned embeddings)...")
+        try:
+            from modeling_deep import run_deep_experiments
+            run_deep_experiments(
+                df_features=df,
+                modeling_data=data,
+                tree_model_output=model_output,
+                feature_set=DEEP_FEATURE_SET,
+                label_col=DEEP_LABEL_COL,
+            )
+        except ImportError as e:
+            print(f"  Deep branch skipped: {e}")
+            print("  Install optional dependencies with `.venv/bin/pip install -r requirements-deep.txt`.")
+        except Exception as e:
+            log.warning(f"Deep branch failed: {e}")
 
     # ── STEP 9: Evaluation plots ──────────────────────────────────────────────
     print("\n[STEP 9] Evaluation plots...")
