@@ -14,12 +14,14 @@ v6 IMPROVEMENTS SUMMARY:
   10. PRISTINE ANALYSIS: explicitly tests whether performance reflects biology vs data richness
 """
 
+import re
+
 import numpy as np
 import pandas as pd
 from pathlib import Path
 from config import (
     DATA_DIR, REPORT_DIR, FIG_DIR, MODEL_DIR, TEST_YEAR_CUTOFF,
-    RANDOM_SEED, log,
+    RANDOM_SEED, log, RUN_DEEP_EXPERIMENTS, DEEP_FEATURE_SET, DEEP_LABEL_COL,
 )
 
 # ── Step imports ──────────────────────────────────────────────────────────────
@@ -71,7 +73,9 @@ def filter_trials(studies: list[dict]) -> pd.DataFrame:
             "conditions": "|".join(cond_mod.get("conditions", [])),
             "intervention_names": "|".join(drugs),
             "primary_outcome": "|".join(
-                [o.get("measure", "") for o in outcome_mod.get("primaryOutcomes", [])]
+                " ".join(str(o.get(field, "") or "")
+                         for field in ("measure", "description", "timeFrame"))
+                for o in outcome_mod.get("primaryOutcomes", [])
             ),
             "brief_summary": desc_mod.get("briefSummary", ""),
         })
@@ -152,6 +156,29 @@ BIOMARKER_INDICATORS = [
     "overexpression", "biomarker-selected", "biomarker selected",
 ]
 
+
+def classify_endpoint_type(endpoint_text: str) -> str | None:
+    """Classify a primary-outcome description into a coarse endpoint group."""
+    text = str(endpoint_text or "").lower()
+    if not text.strip():
+        return None
+    if any(k in text for k in ["overall survival", "mortality", "time to death"]):
+        return "survival"
+    if re.search(r"\bos\b", text) and not re.search(r"\bdose\b", text):
+        return "survival"
+    if any(k in text for k in [
+        "progression-free", "progression free", "time to progression",
+    ]) or re.search(r"\bpfs\b", text):
+        return "pfs"
+    if any(k in text for k in [
+        "response rate", "objective response", "complete response",
+        "partial response", "disease control rate", "clinical benefit rate",
+    ]) or re.search(r"\borr\b", text):
+        return "response"
+    if any(k in text for k in ["biomarker", "expression", "mutation"]):
+        return "biomarker"
+    return "other"
+
 def normalize_trials(df: pd.DataFrame) -> pd.DataFrame:
     """Map drug names to targets, normalize disease names, extract biomarkers."""
     print("  Normalizing drugs...")
@@ -211,22 +238,7 @@ def normalize_trials(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Endpoint type from primary outcome text
-    def classify_endpoint(row):
-        text = str(row.get("primary_outcome", "") or "").lower()
-        if any(k in text for k in ["overall survival", " os ", "death"]):
-            return "survival"
-        elif any(k in text for k in ["progression-free", "pfs", "progression free"]):
-            return "pfs"
-        elif any(k in text for k in ["response rate", "orr", "objective response",
-                                      "complete response", "partial response"]):
-            return "response"
-        elif any(k in text for k in ["biomarker", "expression", "mutation"]):
-            return "biomarker"
-        elif text:
-            return "other"
-        return None
-
-    df["endpoint_type"] = df.apply(classify_endpoint, axis=1)
+    df["endpoint_type"] = df["primary_outcome"].apply(classify_endpoint_type)
     df["endpoint_type_num"] = df["endpoint_type"].map(
         {"survival": 0, "pfs": 1, "response": 2, "biomarker": 3, "other": 4}
     ).fillna(-1)
@@ -324,8 +336,13 @@ def build_modeling_data(df_features: pd.DataFrame, feature_cols: list[str]) -> d
                         else pd.Series([0]*len(test_df), index=test_df.index))
                   for ln in label_defs}
 
-    print(f"  Features: raw={len(feature_sets.get('raw', ({},{}))[ 0].columns)}, "
-          f"composite=7, hybrid={len(feature_sets.get('hybrid', ({},{}))[ 0].columns)}")
+    print(
+        "  Features: "
+        + ", ".join(
+            f"{name}={len(matrices[0].columns)}"
+            for name, matrices in feature_sets.items()
+        )
+    )
 
     return {
         "feature_sets": feature_sets,
@@ -431,18 +448,6 @@ def main():
             df = build_labels_v8(df, fetch_live=True)
         except Exception as e:
             log.warning(f"v8 label enrichment failed: {e}")
-    # v8: optionally enrich labels with structured results + publications
-    # Set USE_V8_LABELS = True to fetch from ClinicalTrials.gov and PubMed
-    # This adds ~30 min on first run but is cached after
-    USE_V8_LABELS = False
-    if USE_V8_LABELS:
-        try:
-            from labels_v8 import build_labels_v8
-            print("  [v8] Enriching labels with structured results and publications...")
-            df = build_labels_v8(df, fetch_live=True)
-        except Exception as e:
-            log.warning(f"v8 label enrichment failed: {e}")
-
     labelable = df[df["label_balanced"] != -1]
     pos = (labelable["label_balanced"] == 1).sum()
     neg = (labelable["label_balanced"] == 0).sum()
@@ -470,11 +475,21 @@ def main():
     # ── STEP 6: Features ─────────────────────────────────────────────────────
     print("\n[STEP 6] Computing features (pair-level + missingness indicators)...")
     df = compute_all_features(df, pair_data, target_data)
+    try:
+        from embedding_features import apply_precomputed_cbio_features
+        df = apply_precomputed_cbio_features(df)
+    except Exception as e:
+        log.warning(f"Precomputed cBioPortal merge skipped: {e}")
 
     feature_cols = [c for c in df.columns
                     if c in ALL_RAW_FEATURES
                     or c in ["CDS", "TDS", "BFS", "MCS", "TWS", "EMS", "BIOLOGY_SCORE"]
                     or c.endswith("_missing")]
+    df.to_csv(DATA_DIR / "full_feature_matrix.csv", index=False)
+    try:
+        df.to_parquet(DATA_DIR / "full_feature_matrix.parquet", index=False)
+    except Exception:
+        pass
 
     # ── STEP 7: Modeling dataset ──────────────────────────────────────────────
     print("\n[STEP 7] Building modeling dataset...")
@@ -492,6 +507,23 @@ def main():
     model_output = train_all_models(data)
     trained_models = model_output["trained"]
     best_models = model_output["best"]
+
+    if RUN_DEEP_EXPERIMENTS:
+        print("\n[STEP 8B] Deep learning branch (learned embeddings)...")
+        try:
+            from modeling_deep import run_deep_experiments
+            run_deep_experiments(
+                df_features=df,
+                modeling_data=data,
+                tree_model_output=model_output,
+                feature_set=DEEP_FEATURE_SET,
+                label_col=DEEP_LABEL_COL,
+            )
+        except ImportError as e:
+            print(f"  Deep branch skipped: {e}")
+            print("  Install optional dependencies with `.venv/bin/pip install -r requirements-deep.txt`.")
+        except Exception as e:
+            log.warning(f"Deep branch failed: {e}")
 
     # ── STEP 9: Evaluation plots ──────────────────────────────────────────────
     print("\n[STEP 9] Evaluation plots...")

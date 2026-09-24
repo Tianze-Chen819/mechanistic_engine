@@ -76,7 +76,16 @@ def cached_get(url: str, params: dict = None, tag: str = None,
             log.warning(f"Timeout attempt {attempt+1}/{retries}: {url}")
             time.sleep(2 ** attempt)
         except requests.exceptions.HTTPError as e:
-            log.warning(f"HTTP {e.response.status_code} for {url}")
+            status = e.response.status_code
+            log.warning(f"HTTP {status} attempt {attempt+1}/{retries}: {url}")
+            if status == 429 or 500 <= status < 600:
+                retry_after = e.response.headers.get("Retry-After")
+                try:
+                    delay = float(retry_after) if retry_after else 2 ** attempt
+                except (TypeError, ValueError):
+                    delay = 2 ** attempt
+                time.sleep(min(max(delay, 0.5), 30))
+                continue
             return None
         except KeyboardInterrupt:
             raise  # always propagate Ctrl+C
@@ -820,57 +829,7 @@ def query_cbio_pair(symbol: str, disease: str) -> dict:
 
 # ── PubMed (pair-level) ───────────────────────────────────────────────────────
 
-def query_pubmed_pair(symbol: str, disease: str) -> dict:
-    """Query PubMed for publications on a specific target-disease pair."""
-    query = f"{symbol}[Title/Abstract] AND {disease}[Title/Abstract]"
-    tag = f"pubmed_pair_{symbol}_{disease.lower().replace(' ', '_')}"
-
-    result = {
-        "pubmed_pair_count": 0,
-        "clinical_trial_pub_count": 0,
-        "pair_pub_acceleration": 0,
-        "has_real_pubmed_data": False,
-    }
-
-    # Search count
-    count_data = cached_get(
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
-        params={"db": "pubmed", "term": query, "rettype": "count",
-                "retmode": "json", "tool": "mech_engine"},
-        tag=tag + "_count",
-    )
-    if count_data:
-        count = int(count_data.get("esearchresult", {}).get("count", 0))
-        result["pubmed_pair_count"] = min(count / 1000.0, 1.0)
-        result["has_real_pubmed_data"] = True
-
-    # Clinical trial papers
-    ct_query = f"{symbol}[Title/Abstract] AND {disease}[Title/Abstract] AND clinical trial[pt]"
-    ct_data = cached_get(
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
-        params={"db": "pubmed", "term": ct_query, "rettype": "count",
-                "retmode": "json", "tool": "mech_engine"},
-        tag=tag + "_ct_count",
-    )
-    if ct_data:
-        ct_count = int(ct_data.get("esearchresult", {}).get("count", 0))
-        result["clinical_trial_pub_count"] = min(ct_count / 100.0, 1.0)
-
-    # Recent papers (acceleration signal)
-    recent_query = query + " AND 2021:2024[pdat]"
-    recent_data = cached_get(
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
-        params={"db": "pubmed", "term": recent_query, "rettype": "count",
-                "retmode": "json", "tool": "mech_engine"},
-        tag=tag + "_recent",
-    )
-    if recent_data and result["pubmed_pair_count"] > 0:
-        recent_count = int(recent_data.get("esearchresult", {}).get("count", 0))
-        pair_total = count if count_data else 1
-        result["pair_pub_acceleration"] = min(recent_count / max(pair_total * 0.4, 1), 1.0)
-
-    time.sleep(0.4)  # NCBI rate limit: max 3 req/sec without API key
-    return result
+from pubmed_client import query_pubmed_pair
 
 # ── Master enrichment function ─────────────────────────────────────────────────
 
