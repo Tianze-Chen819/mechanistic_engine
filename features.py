@@ -113,9 +113,15 @@ def compute_raw_features(trial: pd.Series, pair_data: dict, target_data: dict) -
     modality = trial.get("modality", "unknown")
     has_biomarker = bool(trial.get("has_biomarker", False))
 
-    # Look up data for this specific (target, disease) pair
-    pair_key = (symbol, disease)
-    pair = pair_data.get(pair_key, {})
+    # Look up data for this specific (target, disease, start_year) triple. The
+    # year matters because the PubMed features are bounded at the trial's start
+    # year; fall back to the year-agnostic key for callers that still use it.
+    start_year = trial.get("start_year")
+    pair = {}
+    if start_year and not pd.isna(start_year):
+        pair = pair_data.get((symbol, disease, int(start_year)), {})
+    if not pair:
+        pair = pair_data.get((symbol, disease), {})
 
     # Fall back to the target-level data
     tgt = target_data.get(symbol, {})

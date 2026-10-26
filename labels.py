@@ -1,28 +1,48 @@
 """
-labels.py — Circularity-free label construction v7.
+labels.py — Circularity-free label construction v9.
 
-v7 KEY IMPROVEMENTS:
-  1. PERMISSIVE label is now the PRIMARY training label (not strict/balanced).
-     This gives ~747 determinate trials vs 624, increasing test set size.
+v9 REWRITE (see docs/label_audit.md for the audit that drove this).
 
-  2. Weaker negative signals are still kept but clearly flagged in provenance.
-     "completed+results+no_positive_signal" remains negative but the model
-     gets confidence weights to down-weight these uncertain negatives.
+The v7 labeller scored a trial "positive" whenever a phrase like "complete
+response" or "approved" appeared anywhere in why_stopped + brief_summary +
+primary_outcome. brief_summary and primary_outcome are written when the trial
+is REGISTERED, before a single patient enrols — primary_outcome is usually
+just the endpoint's textbook definition ("Complete Response (CR): disappearance
+of all target lesions..."), and brief_summary background prose routinely
+mentions OTHER drugs being "approved". An audit of all 123 v7 positives found
+100% of them fired only on those two pre-trial fields — never on why_stopped —
+so the label was measuring how a protocol was worded, not what happened.
 
-  3. Phase 3 advancement as strong positive signal — if a drug advanced to
-     Phase 3 in the same indication, the Phase 2 almost certainly succeeded.
+v9 CHANGES:
+  1. Free-text triggers now only look at `why_stopped`, the one field that is
+     ever written after the trial concludes. brief_summary and primary_outcome
+     are no longer used as label evidence at all.
+  2. The `completed+results+no_positive_signal` bucket (93% of the old negative
+     class) is no longer forced to negative. A trial merely posting results
+     with no post-hoc text to read is genuinely unknown from this dataset
+     alone — it is now indeterminate. See PRIORITY 1/2 in labels_v8.py for how
+     to actually resolve these (structured p-values, linked publications).
+  3. TERMINATED_EFFICACY_REASONS no longer contains the bare word "efficacy"
+     (config.py) — it was matching "stopped early due to overwhelming
+     efficacy" (a SUCCESS) the same as "terminated for lack of efficacy" (a
+     FAILURE). TERMINATED_SUCCESS_REASONS (new, config.py) now identifies the
+     success case explicitly.
+  4. `known_approvals` is now actually used (previously accepted but ignored).
+  5. Everything from v7 that was already legitimate post-hoc evidence is kept:
+     terminated-for-efficacy-failure as negative, approved-in-indication as
+     positive (a real regulatory fact, checked after the trial), safety- and
+     accrual-driven terminations left indeterminate.
 
-  4. Withdrawn trials are now split: withdrawn for safety = indeterminate,
-     withdrawn for poor accrual = weak negative, withdrawn for efficacy = negative.
-
-  5. label_permissive now also includes: approved drug in approved indication
-     even without explicit positive text (restored, but only for specific indication).
+This produces far fewer determinate labels than v7 (which is the point — v7's
+extra labels were fabricated from protocol boilerplate). Use labels_v8.py's
+`build_labels_v8` with `fetch_live=True` to recover many of them legitimately,
+from structured trial results and linked publications instead of prose.
 """
 
 import pandas as pd
 from config import (
     POSITIVE_TEXT_TRIGGERS, NEGATIVE_TEXT_TRIGGERS,
-    TERMINATED_EFFICACY_REASONS, log,
+    TERMINATED_EFFICACY_REASONS, TERMINATED_SUCCESS_REASONS, log,
 )
 
 # Drug → approved indications mapping
@@ -170,6 +190,17 @@ def _termination_is_accrual(why_stopped: str) -> bool:
     ws = why_stopped.lower()
     return any(r in ws for r in POOR_ACCRUAL_TERMS)
 
+def _termination_is_success(why_stopped: str) -> bool:
+    """
+    Stopped early BECAUSE the drug was working (interim efficacy triggered
+    early stopping) — a genuine positive outcome, and the mirror image of
+    _termination_is_efficacy(). See TERMINATED_SUCCESS_REASONS in config.py.
+    """
+    if not why_stopped or not isinstance(why_stopped, str):
+        return False
+    ws = why_stopped.lower()
+    return any(r in ws for r in TERMINATED_SUCCESS_REASONS)
+
 def _has_results_posted(trial) -> bool:
     return bool(trial.get("results_first_posted") or trial.get("has_results"))
 
@@ -180,92 +211,88 @@ def _approved_in_indication(drug: str, disease: str) -> bool:
 
 def assign_labels(trial, known_approvals: set) -> dict:
     """
-    Assign labels from outcome signals only — no biology used.
+    Assign labels from outcome signals only — no biology, and (v9) no
+    pre-trial text. Free-text evidence is read ONLY from `why_stopped`, the
+    single field ClinicalTrials.gov writes after a trial's fate is known;
+    `brief_summary` and `primary_outcome` are written at registration and are
+    never used here (see the module docstring for why that mattered).
 
     LABEL PHILOSOPHY:
-    - label_strict:     Only unambiguous outcomes (explicit text signal + results)
-    - label_balanced:   Adds terminated-for-efficacy as negative
-    - label_permissive: Adds approved-in-indication as positive, accrual
-                        termination as weak negative. USE THIS FOR TRAINING.
-                        Gives more training data without sacrificing integrity.
+    - label_strict:     Only unambiguous post-hoc outcomes: an explicit
+                        why_stopped statement, or regulatory approval in this
+                        specific indication (a real-world fact, not text
+                        matching).
+    - label_balanced:   Same as strict (kept as a separate column for
+                        pipeline compatibility; v9 does not add anything
+                        strict lacks that is still circularity-free).
+    - label_permissive: Adds nothing beyond strict/balanced by design — the
+                        v7 permissive rules either duplicated strict-eligible
+                        evidence or admitted pre-trial text, which is exactly
+                        the bug this rewrite removes. Kept for pipeline/report
+                        compatibility.
+
+    A trial with posted results but no post-hoc text and no approval record is
+    genuinely UNKNOWN from this dataset and is left indeterminate (-1) rather
+    than defaulted to negative. Recovering it legitimately requires structured
+    trial results or a linked publication — see labels_v8.build_labels_v8.
     """
     status = str(trial.get("status", "")).upper()
     why_stopped = str(trial.get("why_stopped", "") or "")
-    brief_summary = str(trial.get("brief_summary", "") or "")
-    primary_outcome = str(trial.get("primary_outcome", "") or "")
     canonical_drug = str(trial.get("canonical_drug", "") or "").lower()
     disease = str(trial.get("disease", "") or "").lower()
 
-    combined_text = " ".join([why_stopped, brief_summary, primary_outcome])
-    text_signal = _text_signal(combined_text)
-    has_results = _has_results_posted(trial)
-    approved_here = _approved_in_indication(canonical_drug, disease)
-    is_unmapped = canonical_drug in ("unmapped", "", "unknown")
+    # Post-hoc signal ONLY — computed from why_stopped alone.
+    why_signal = _text_signal(why_stopped)
+    approved_here = canonical_drug in known_approvals and _approved_in_indication(
+        canonical_drug, disease)
     is_efficacy_stop = _termination_is_efficacy(why_stopped)
+    is_success_stop = _termination_is_success(why_stopped)
     is_safety_stop = _termination_is_safety(why_stopped)
     is_accrual_stop = _termination_is_accrual(why_stopped)
 
-    # ── STRICT: only unambiguous signals ──────────────────────────────────────
+    # ── STRICT: only unambiguous, post-hoc signals ────────────────────────────
     if status == "COMPLETED":
-        if text_signal == "negative":
-            strict = 0; prov = "completed+negative_text"
-        elif text_signal == "positive" and has_results:
-            strict = 1; prov = "completed+positive_text+results"
-        elif text_signal == "positive" and approved_here:
-            strict = 1; prov = "completed+positive_text+approved"
-        elif has_results and not is_unmapped and text_signal != "positive":
-            # Results posted but no positive signal — lean negative
-            strict = 0; prov = "completed+results+no_positive_signal"
-        elif not has_results and not is_unmapped:
-            # Completed but never posted results — ambiguous, keep indeterminate
-            # This is different from posting neutral results (above)
-            strict = -1; prov = "completed+no_results_posted"
+        if approved_here:
+            # Regulatory approval in this exact indication is a real-world
+            # outcome fact, checked after the trial — not a text match.
+            strict = 1; prov = "completed+approved_indication"
+        elif why_signal == "negative":
+            strict = 0; prov = "completed+why_stopped_negative"
         else:
-            strict = -1; prov = "completed+indeterminate"
+            # Results may be posted, but with no post-hoc text and no
+            # approval, this trial's outcome is genuinely unknown from this
+            # dataset. Do not guess.
+            strict = -1; prov = "completed+unknown"
 
     elif status == "TERMINATED":
-        if is_efficacy_stop:
-            strict = 0; prov = "terminated+efficacy"
-        elif text_signal == "negative":
+        if is_success_stop and not is_efficacy_stop:
+            # Stopped early BECAUSE the drug was working — a real positive.
+            strict = 1; prov = "terminated+early_success"
+        elif is_efficacy_stop:
+            strict = 0; prov = "terminated+efficacy_failure"
+        elif why_signal == "negative":
             strict = 0; prov = "terminated+negative_text"
+        elif is_safety_stop:
+            # Toxicity, not efficacy — the drug may have worked. Unknown.
+            strict = -1; prov = "terminated+safety"
+        elif is_accrual_stop:
+            # Logistics, not biology. Unknown.
+            strict = -1; prov = "terminated+accrual"
         else:
             strict = -1; prov = "terminated+indeterminate"
 
     elif status == "WITHDRAWN":
-        if text_signal == "negative":
+        if why_signal == "negative":
             strict = 0; prov = "withdrawn+negative"
         else:
-            strict = -1; prov = "withdrawn"
+            strict = -1; prov = "withdrawn+indeterminate"
 
     else:
         strict = -1; prov = "other+indeterminate"
 
-    # ── BALANCED: same as strict ───────────────────────────────────────────────
+    # ── BALANCED / PERMISSIVE: identical by design (see docstring) ───────────
     balanced = strict
-
-    # ── PERMISSIVE: more labels, still circularity-free ───────────────────────
-    permissive = balanced
-
-    if permissive == -1:
-        if status == "COMPLETED" and approved_here:
-            # Approved drug in its approved indication — strong signal even
-            # without explicit text (regulatory approval IS the outcome signal)
-            permissive = 1; prov = "completed+approved_indication"
-
-        elif status == "TERMINATED" and is_accrual_stop and not is_efficacy_stop:
-            # Terminated for poor accrual, not efficacy — weak negative
-            # (trial stopped due to logistics, not because drug failed)
-            # Leave as indeterminate — don't force this into negative
-            permissive = -1
-
-        elif status == "TERMINATED" and is_safety_stop:
-            # Terminated for toxicity — drug may have worked but was too toxic
-            # This is NOT a negative for efficacy — leave indeterminate
-            permissive = -1
-
-        elif status == "COMPLETED" and is_unmapped and not has_results:
-            # Unmapped drug, no results — truly unknowable
-            permissive = -1
+    permissive = strict
 
     return {
         "label_strict": strict,

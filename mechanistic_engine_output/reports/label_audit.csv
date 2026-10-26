@@ -1,0 +1,9 @@
+check,verdict,detail
+label_agreement,FAIL,3 label pairs are 100% identical; the 3 advertised label definitions are 1 label evaluated 3 times
+provenance_concentration,FAIL,'completed+results+no_positive_signal' produces 75% of determinate labels
+hard_outcome_evidence,FAIL,only 5.2% of labels have a recorded post-hoc outcome event
+positive_label_validity,FAIL,100% of positives derive solely from text written before the trial started
+verbosity_confound,FAIL,text length alone gives AUC 0.629
+trigger_logic,FAIL,"5 false-positive and 3 false-negative trigger cases; no negation handling, 'efficacy' matches as a bare substring"
+split_contamination,FAIL,"43% of test rows share a (drug, disease) pair with train"
+effective_sample_size,FAIL,638 rows collapse onto 200 distinct biology profiles (34 targets); 23% are chemo pseudo-targets
