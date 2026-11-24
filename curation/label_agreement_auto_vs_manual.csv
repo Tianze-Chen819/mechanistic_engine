@@ -1,0 +1,20 @@
+nct_id,manual,label_provenance,auto,outcome
+NCT00494481,0,completed+results+no_positive_signal,0,agree
+NCT01057017,EXCLUDE,terminated+efficacy,0,excluded
+NCT01492088,EXCLUDE,completed+results+no_positive_signal,0,excluded
+NCT00284154,1,completed+positive_text+results,1,agree
+NCT01004250,U,completed+results+no_positive_signal,0,manual undetermined
+NCT01135498,U,completed+results+no_positive_signal,0,manual undetermined
+NCT00866047,1,completed+results+no_positive_signal,0,disagree: auto 0 vs manual 1
+NCT02429375,EXCLUDE,completed+positive_text+results,1,excluded
+NCT00408603,U,completed+positive_text+results,1,manual undetermined
+NCT02551432,0,completed+results+no_positive_signal,0,agree
+NCT02772588,0,completed+results+no_positive_signal,0,agree
+NCT03878472,U,completed+positive_text+approved,1,manual undetermined
+NCT01108341,U,completed+positive_text+results,1,manual undetermined
+NCT02006667,EXCLUDE,completed+results+no_positive_signal,0,excluded
+NCT02826486,U,completed+results+no_positive_signal,0,manual undetermined
+NCT02164916,1,completed+results+no_positive_signal,0,disagree: auto 0 vs manual 1
+NCT01593254,1,completed+results+no_positive_signal,0,disagree: auto 0 vs manual 1
+NCT02354586,1,completed+results+no_positive_signal,0,disagree: auto 0 vs manual 1
+NCT01165021,U,completed+results+no_positive_signal,0,manual undetermined
